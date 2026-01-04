@@ -1,8 +1,32 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src",
+  "sourceRoot": "apps/medbook-api/src",
   "compilerOptions": {
-    "deleteOutDir": true
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/medbook-api/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/medbook-api",
+  "projects": {
+    "medbook-api": {
+      "type": "application",
+      "root": "apps/medbook",
+      "entryFile": "main",
+      "sourceRoot": "apps/medbook-api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/medbook-api/tsconfig.app.json"
+      }
+    },
+    "medbook-batch": {
+      "type": "application",
+      "root": "apps/medbook-batch",
+      "entryFile": "main",
+      "sourceRoot": "apps/medbook-batch/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/medbook-batch/tsconfig.app.json"
+      }
+    }
   }
 }
