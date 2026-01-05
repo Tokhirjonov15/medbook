@@ -1,5 +1,5 @@
 import { Schema } from 'mongoose';
-import { MemberType} from '../libs/enums/member.enum';
+import { MemberStatus, MemberType} from '../libs/enums/member.enum';
 import { Gender } from '../libs/enums/gender.enum';
 
 const MemberSchema = new Schema(
@@ -8,6 +8,12 @@ const MemberSchema = new Schema(
       type: String,
       index: { unique:true, sparse: true },
       required: true,
+    },
+
+    memberStatus: {
+      type: String,
+      enum: MemberStatus,
+      default: MemberStatus.ACTIVE,
     },
 
     memberPassword: {
@@ -49,7 +55,7 @@ const MemberSchema = new Schema(
         lng: Number,
       },
     },
-    
+
     isActive: {
       type: Boolean,
       default: true,

@@ -1,7 +1,7 @@
 import { Field, ObjectType, ID } from '@nestjs/graphql';
 import { Gender } from '../../enums/gender.enum';
 import type { ObjectId } from 'mongoose';
-import { MemberType } from '../../enums/member.enum';
+import { MemberStatus, MemberType } from '../../enums/member.enum';
 
 @ObjectType()
 export class Coordinates {
@@ -55,6 +55,9 @@ export class Member {
 
   @Field(() => MemberType)
   memberType: MemberType;
+
+  @Field(() => MemberStatus)
+	memberStatus: MemberStatus;
 
   @Field(() => String)
   memberPhone: string;

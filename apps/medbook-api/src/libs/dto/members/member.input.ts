@@ -37,7 +37,7 @@ export class LoginInput {
   @IsNotEmpty() 
   @Length(4, 15)
   @Field(() => String)
-  memberEmail: string;
+  memberNick: string;
 
   @IsNotEmpty()
   @Length(5, 12)
