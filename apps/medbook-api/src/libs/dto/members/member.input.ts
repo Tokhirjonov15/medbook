@@ -1,4 +1,3 @@
-// src/auth/dto/signup.input.ts
 import { Field, InputType } from '@nestjs/graphql';
 import { 
   IsNotEmpty,
@@ -6,54 +5,42 @@ import {
   IsOptional,
 } from 'class-validator';
 import { Gender } from '../../enums/gender.enum';
-import { UserRole } from '../../enums/member.enum';
+import { MemberType } from '../../enums/member.enum';
 
 @InputType()
 export class SignupInput {
   @IsNotEmpty()
-  @Length(2, 50)
+  @Length(4, 15)
   @Field(() => String)
-  firstName: string;
-
-  @IsNotEmpty()
-  @Length(2, 50)
-  @Field(() => String)
-  lastName: string;
-
-  @IsNotEmpty() 
-  @Field(() => String)
-  email: string;
+  memberNick: string;
 
   @IsNotEmpty()
   @Length(5, 12)
   @Field(() => String)
-  password: string;
+  memberPassword: string;
 
-  @IsNotEmpty()
-  @Field(() => UserRole)
-  role: UserRole;
+  @IsOptional()
+  @Field(() => MemberType, { nullable: true })
+  memberType?: MemberType;
 
   @IsNotEmpty()
   @Field(() => String)
-  phone: string;
-
-  @IsOptional()
-  @Field(() => String, { nullable: true })
-  dateOfBirth?: string;
+  memberPhone: string;
 
   @IsOptional()
   @Field(() => Gender, { nullable: true })
-  gender?: Gender;
+  memberGender?: Gender;
 }
 
 @InputType()
 export class LoginInput {
   @IsNotEmpty() 
+  @Length(4, 15)
   @Field(() => String)
-  email: string;
+  memberEmail: string;
 
   @IsNotEmpty()
   @Length(5, 12)
   @Field(() => String)
-  password: string;
+  memberPassword: string;
 }

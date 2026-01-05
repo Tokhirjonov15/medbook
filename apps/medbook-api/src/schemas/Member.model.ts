@@ -1,62 +1,44 @@
 import { Schema } from 'mongoose';
-import { UserRole } from '../libs/enums/member.enum';
+import { MemberType} from '../libs/enums/member.enum';
 import { Gender } from '../libs/enums/gender.enum';
 
-const UserSchema = new Schema(
+const MemberSchema = new Schema(
   {
-    firstName: {
+    memberNick: {
       type: String,
+      index: { unique:true, sparse: true },
       required: true,
-      trim: true,
     },
 
-    lastName: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-      index: true,
-    },
-
-    password: {
+    memberPassword: {
       type: String,
       required: true,
       select: false,
     },
 
-    role: {
+    memberType: {
       type: String,
-      enum: UserRole,
-      default: UserRole.PATIENT,
-      index: true,
+      enum: MemberType,
+      default: MemberType.PATIENT,
     },
 
-    phone: {
+    memberPhone: {
       type: String,
+      index: { unique:true, sparse: true },
+      required: true,
     },
 
-    avatar: {
+    memberImage: {
       type: String,
       default: '',
     },
 
-    dateOfBirth: {
-      type: Date,
-    },
-
-    gender: {
+    memberGender: {
       type: String,
       enum: Gender,
     },
 
-    address: {
+    memberAddress: {
       street: String,
       city: String,
       state: String,
@@ -67,27 +49,7 @@ const UserSchema = new Schema(
         lng: Number,
       },
     },
-
-    emailVerified: {
-      type: Boolean,
-      default: false,
-    },
-
-    verificationToken: {
-      type: String,
-      select: false,
-    },
-
-    passwordResetToken: {
-      type: String,
-      select: false,
-    },
-
-    passwordResetExpires: {
-      type: Date,
-      select: false,
-    },
-
+    
     isActive: {
       type: Boolean,
       default: true,
@@ -96,11 +58,6 @@ const UserSchema = new Schema(
 
     lastLogin: {
       type: Date,
-    },
-
-    refreshToken: {
-      type: String,
-      select: false,
     },
 
     // Patient-specific fields
@@ -139,14 +96,9 @@ const UserSchema = new Schema(
 );
 
 // Indexes
-UserSchema.index({ email: 1 });
-UserSchema.index({ role: 1 });
-UserSchema.index({ isActive: 1 });
-UserSchema.index({ createdAt: -1 });
+MemberSchema.index({ email: 1 });
+MemberSchema.index({ role: 1 });
+MemberSchema.index({ isActive: 1 });
+MemberSchema.index({ createdAt: -1 });
 
-// Virtual field
-UserSchema.virtual('fullName').get(function () {
-  return `${this.firstName} ${this.lastName}`;
-});
-
-export default UserSchema;
+export default MemberSchema;
