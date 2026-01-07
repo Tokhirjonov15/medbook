@@ -5,13 +5,17 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { MemberStatus } from '../../libs/enums/member.enum';
 import { Message } from '../../libs/enums/common.enum';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class MemberService {
-    constructor(@InjectModel("Member") private readonly memberModel: Model<Member>) {}
+    constructor(
+        @InjectModel("Member") private readonly memberModel: Model<Member>,
+        private authService: AuthService
+    ) {}
 
     public async signup(input: SignupInput): Promise<Member> {
-        // TODO: Hash Password
+        input.memberPassword = await this.authService.hashPassword(input.memberPassword);
         try {
             const result = await this.memberModel.create(input);
             // TODO:  Authentication via TOKEN
@@ -35,9 +39,12 @@ export class MemberService {
 			throw new InternalServerErrorException(Message.BLOCKED_USER);
 		}
 
-        // TODO: Compare Password
-        const isMatch = memberPassword === response.memberPassword;
+        if(!response.memberPassword) {
+            throw new InternalServerErrorException(Message.WRONG_PASSWORD);
+        }
+        const isMatch = await this.authService.comparePassword(input.memberPassword, response.memberPassword);
         if(!isMatch) throw new InternalServerErrorException(Message.WRONG_PASSWORD);
+
         return response;
     }
 

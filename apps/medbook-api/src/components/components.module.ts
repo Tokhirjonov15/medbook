@@ -8,6 +8,7 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ChatModule } from './chat/chat.module';
 import { EmailModule } from './email/email.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { EmailModule } from './email/email.module';
     ReviewsModule, 
     NotificationsModule, 
     ChatModule, 
-    EmailModule,
+    EmailModule, AuthModule,
   ],
 })
 export class ComponentsModule {}
