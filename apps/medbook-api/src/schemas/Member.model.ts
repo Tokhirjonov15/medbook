@@ -101,10 +101,4 @@ const MemberSchema = new Schema(
   }
 );
 
-// Indexes
-MemberSchema.index({ email: 1 });
-MemberSchema.index({ role: 1 });
-MemberSchema.index({ isActive: 1 });
-MemberSchema.index({ createdAt: -1 });
-
 export default MemberSchema;
