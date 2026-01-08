@@ -30,7 +30,6 @@ export class RolesGuard implements CanActivate {
 
 			console.log('memberNick[roles] =>', authMember.memberNick);
 			request.body.authMember = authMember;
-			return true;
 		}
 
 		// description => http, rpc, gprs and etc are ignored

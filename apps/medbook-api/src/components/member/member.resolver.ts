@@ -16,21 +16,21 @@ export class MemberResolver {
 
     @Mutation(() => Member)
     public async signup(@Args("input") input: SignupInput): Promise<Member> {
-            console.log("Mutation: signup");
-            return this.memberService.signup(input);
+        console.log("Mutation: signup");
+        return await this.memberService.signup(input);
     }
 
     @Mutation(() => Member)
     public async login(@Args("input") input: LoginInput): Promise<Member> {
         console.log("Mutation: login");
-        return this.memberService.login(input);
+        return await this.memberService.login(input);
     }
 
     @UseGuards(AuthGuard)
     @Mutation(() => String)
     public async updateMember (@AuthMember('_id') memberId: ObjectId): Promise<string> {
         console.log("Mutation: updateMember");
-        return this.memberService.updateMember();
+        return await this.memberService.updateMember();
     }
 
     @UseGuards(AuthGuard)
@@ -52,20 +52,23 @@ export class MemberResolver {
     @Query(() => String)
     public async getMember(): Promise<string> {
         console.log("Query: getMember");
-        return this.memberService.getMember();
+        return await this.memberService.getMember();
     }
 
     /** ADMIN */
 
     // Authorization: ADMIN
+    @Roles(MemberType.ADMIN)
+    @UseGuards(RolesGuard)
     @Mutation(() => String)
-    public async getAllmembersByAdmin(): Promise<string> {
-        return this.memberService.getAllmembersByAdmin();
+    public async getAllmembersByAdmin(@AuthMember() authMember: Member): Promise<string> {
+        console.log("authMember.memberType", authMember.memberType)
+        return await this.memberService.getAllmembersByAdmin();
     }
 
     // Authorization: ADMIN
     @Mutation(() => String)
     public async updateMemberByAdmin(): Promise<string> {
-        return this.memberService.updateMemberByAdmin();
+        return await this.memberService.updateMemberByAdmin();
     }
 }
