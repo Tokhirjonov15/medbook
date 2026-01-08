@@ -17,6 +17,8 @@ export class Doctor {
   @Field(() => String)
   memberPhone: string;
 
+  memberPassword?: string;
+
   @Field(() => String)
   licenseNumber: string;
 
