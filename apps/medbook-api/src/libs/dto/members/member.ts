@@ -103,3 +103,9 @@ export class Member {
   @Field(() => String, { nullable: true })
   accessToken?: string;
 }
+
+@ObjectType()
+export class Members {
+    @Field(() => [Member])
+    list: Member[];
+}

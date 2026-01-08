@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { LoginInput, SignupInput } from '../../libs/dto/members/member.input';
-import { Member } from '../../libs/dto/members/member';
+import { DoctorsInquiry, LoginInput, SignupInput } from '../../libs/dto/members/member.input';
+import { Member, Members } from '../../libs/dto/members/member';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
-import { MemberStatus } from '../../libs/enums/member.enum';
-import { Message } from '../../libs/enums/common.enum';
+import { MemberStatus, MemberType } from '../../libs/enums/member.enum';
+import { Direction, Message } from '../../libs/enums/common.enum';
 import { AuthService } from '../auth/auth.service';
 import { MemberUpdate } from '../../libs/dto/members/member.update';
 import { T } from '../../libs/types/common';
@@ -82,6 +82,31 @@ export class MemberService {
         if(!targetMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
         return targetMember;
+    }
+
+    public async getDoctors(memberId: ObjectId, input: DoctorsInquiry): Promise<Members> {
+        const { text } = input.search;
+        const match: T = {memberType: MemberType.DOCTOR, memberStatus: MemberStatus.ACTIVE};
+        const sort: T = {[input?.sort ?? "createdAt"] : input?.direction ?? Direction.DESC};
+
+        if (text) match.memberNick = {$regex: new RegExp(text, "i")};
+        console.log("match:", match);
+
+        const result = await this.memberModel.aggregate([
+			{$match: match},
+			{$sort: sort},
+			{
+				$facet: {
+					list: [{$skip: (input.page - 1) * input.limit }, { $limit: input.limit }],
+					metaCounter: [{$count: "total"}],
+				},
+			},
+		])
+		.exec();
+        console.log("result:", result);
+        if(!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+        
+        return result[0];
     }
 
     public async getAllmembersByAdmin(): Promise<string> {

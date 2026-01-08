@@ -6,9 +6,9 @@ import { VerificationStatus } from '../libs/enums/verification.enum';
 
 const DoctorProfileSchema = new Schema(
   {
-    user: {
+    member: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'Member',
       required: true,
       unique: true,
       index: true,
@@ -180,16 +180,6 @@ const DoctorProfileSchema = new Schema(
     collection: 'doctor',
   }
 );
-
-// Indexes
-DoctorProfileSchema.index({ user: 1 });
-DoctorProfileSchema.index({ specializations: 1 });
-DoctorProfileSchema.index({ rating: -1 });
-DoctorProfileSchema.index({ consultationFee: 1 });
-DoctorProfileSchema.index({ verificationStatus: 1 });
-DoctorProfileSchema.index({ isAcceptingPatients: 1 });
-DoctorProfileSchema.index({ isFeatured: -1 });
-DoctorProfileSchema.index({ 'clinicDetails.address.city': 1 });
 
 // Compound indexes for search
 DoctorProfileSchema.index({
