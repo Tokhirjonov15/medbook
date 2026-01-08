@@ -2,16 +2,47 @@ import { Schema } from 'mongoose';
 import { Specialization } from '../libs/enums/specialization.enum';
 import { ConsultationType } from '../libs/enums/consultation.enum';
 import { DayOfWeek } from '../libs/enums/day-of-week.enum';
-import { VerificationStatus } from '../libs/enums/verification.enum';
+import { MemberType } from '../libs/enums/member.enum';
+import { Gender } from '../libs/enums/gender.enum';
 
 const DoctorProfileSchema = new Schema(
   {
-    member: {
-      type: Schema.Types.ObjectId,
+    memberType: {
+        type: String,
+        enum: MemberType,
+        default: MemberType.DOCTOR,
+    },
+
+    memberGender: {
+      type: String,
+      enum: Gender,
+    },
+
+    memberNick: {
+      type: String,
       ref: 'Member',
       required: true,
+    },
+
+    memberPhone: {
+      type: String,
+      required: true,
       unique: true,
-      index: true,
+    },
+    
+    memberPassword: {
+        type: String,
+        select: false,
+        required: true,
+    },
+
+    memberFullName: {
+        type: String,
+    },
+
+    memberImage: {
+        type: String,
+        default: '',
     },
 
     licenseNumber: {
@@ -20,11 +51,10 @@ const DoctorProfileSchema = new Schema(
       unique: true,
     },
 
-    specializations: {
-      type: [String],
+    specialization: {
+      type: String,
       enum: Specialization,
       required: true,
-      index: true,
     },
 
     qualifications: [
@@ -37,12 +67,6 @@ const DoctorProfileSchema = new Schema(
 
     experience: {
       type: Number,
-      required: true,
-    },
-
-    about: {
-      type: String,
-      required: true,
     },
 
     languages: {
@@ -67,12 +91,6 @@ const DoctorProfileSchema = new Schema(
 
     consultationFee: {
       type: Number,
-      required: true,
-    },
-
-    consultationDuration: {
-      type: Number,
-      default: 30,
     },
 
     consultationType: {
@@ -104,12 +122,9 @@ const DoctorProfileSchema = new Schema(
       },
     ],
 
-    rating: {
+    DoctorViews: {
       type: Number,
       default: 0,
-      min: 0,
-      max: 5,
-      index: true,
     },
 
     reviewCount: {
@@ -117,41 +132,7 @@ const DoctorProfileSchema = new Schema(
       default: 0,
     },
 
-    totalPatients: {
-      type: Number,
-      default: 0,
-    },
-
-    totalConsultations: {
-      type: Number,
-      default: 0,
-    },
-
-    verificationStatus: {
-      type: String,
-      enum: VerificationStatus,
-      default: VerificationStatus.PENDING,
-      index: true,
-    },
-
-    verificationDocuments: [
-      {
-        documentType: String,
-        url: String,
-        uploadedAt: Date,
-      },
-    ],
-
-    rejectionReason: {
-      type: String,
-    },
-
     awards: {
-      type: [String],
-      default: [],
-    },
-
-    services: {
       type: [String],
       default: [],
     },
@@ -162,30 +143,11 @@ const DoctorProfileSchema = new Schema(
       bankName: String,
       ifscCode: String,
     },
-
-    isAcceptingPatients: {
-      type: Boolean,
-      default: true,
-      index: true,
-    },
-
-    isFeatured: {
-      type: Boolean,
-      default: false,
-      index: true,
-    },
   },
   {
     timestamps: true,
     collection: 'doctor',
   }
 );
-
-// Compound indexes for search
-DoctorProfileSchema.index({
-  specializations: 1,
-  'clinicDetails.address.city': 1,
-  rating: -1,
-});
 
 export default DoctorProfileSchema;
