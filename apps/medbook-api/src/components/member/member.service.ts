@@ -8,12 +8,16 @@ import { Direction, Message } from '../../libs/enums/common.enum';
 import { AuthService } from '../auth/auth.service';
 import { MemberUpdate } from '../../libs/dto/members/member.update';
 import { T } from '../../libs/types/common';
+import { Doctor, Doctors } from '../../libs/dto/doctors/doctor';
+import { DoctorsService } from '../doctors/doctors.service';
 
 @Injectable()
 export class MemberService {
 	constructor(
 		@InjectModel('Member') private readonly memberModel: Model<Member>,
+		@InjectModel('Doctor') private readonly doctorModel: Model<Doctor>,
 		private authService: AuthService,
+		private doctorsService: DoctorsService,
 	) {}
 
 	public async signup(input: SignupInput): Promise<Member> {
@@ -82,28 +86,41 @@ export class MemberService {
 		return targetMember;
 	}
 
-	public async getDoctors(memberId: ObjectId, input: DoctorsInquiry): Promise<Members> {
+	public async getDoctors(memberId: ObjectId, input: DoctorsInquiry): Promise<Doctors> {
 		const { text } = input.search;
-		const match: T = { memberType: MemberType.DOCTOR, memberStatus: MemberStatus.ACTIVE };
+		const match: T = {}; 
 		const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
 
-		if (text) match.memberNick = { $regex: new RegExp(text, 'i') };
+		if (text) {
+			match.$or = [
+				{ memberNick: { $regex: new RegExp(text, 'i') } },
+				{ memberFullName: { $regex: new RegExp(text, 'i') } },
+				{ 'specializations': { $regex: new RegExp(text, 'i') } }
+			];
+		}
+		
 		console.log('match:', match);
 
-		const result = await this.memberModel
+		const result = await this.doctorModel
 			.aggregate([
 				{ $match: match },
 				{ $sort: sort },
 				{
 					$facet: {
-						list: [{ $skip: (input.page - 1) * input.limit }, { $limit: input.limit }],
+						list: [
+							{ $skip: (input.page - 1) * input.limit }, 
+							{ $limit: input.limit }
+						],
 						metaCounter: [{ $count: 'total' }],
 					},
 				},
 			])
 			.exec();
+		
 		console.log('result:', result);
-		if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+		if (!result.length || !result[0].list.length) {
+			throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+		}
 
 		return result[0];
 	}

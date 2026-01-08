@@ -58,3 +58,18 @@ export class Doctor {
   @Field(() => Date)
   updatedAt: Date;
 }
+
+@ObjectType()
+export class Doctors {
+    @Field(() => [Doctor])
+    list: Doctor[];
+
+    @Field(() => [MetaCounter])
+    metaCounter: MetaCounter[];
+}
+
+@ObjectType()
+export class MetaCounter {
+    @Field(() => Int)
+    total: number;
+}

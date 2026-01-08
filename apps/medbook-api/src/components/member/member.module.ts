@@ -4,11 +4,19 @@ import { MemberResolver } from './member.resolver';
 import { MongooseModule } from '@nestjs/mongoose';
 import MemberSchema from '../../schemas/Member.model';
 import { AuthModule } from '../auth/auth.module';
+import DoctorProfileSchema from '../../schemas/Doctor.model';
+import { DoctorModule } from '../doctors/doctors.module';
+import { ViewModule } from '../view/view.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{name: "Member", schema: MemberSchema}]),
-    AuthModule
+    MongooseModule.forFeature([
+      {name: "Member", schema: MemberSchema},
+      { name: 'Doctor', schema: DoctorProfileSchema },
+    ]),
+    AuthModule,
+    DoctorModule,
+    ViewModule,
   ],
   providers: [MemberService, MemberResolver]
 })

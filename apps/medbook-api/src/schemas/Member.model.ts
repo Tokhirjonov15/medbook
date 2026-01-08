@@ -90,7 +90,7 @@ const MemberSchema = new Schema(
     // Doctor reference
     doctorProfile: {
       type: Schema.Types.ObjectId,
-      ref: 'DoctorProfile',
+      ref: 'DoctorProfileSchema',
     },
   },
   {

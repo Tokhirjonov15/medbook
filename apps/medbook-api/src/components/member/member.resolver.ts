@@ -12,6 +12,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { MemberUpdate } from '../../libs/dto/members/member.update';
 import { shapeIntoMongoObjectId } from '../../libs/config';
 import { WithoutGuard } from '../auth/guards/without.guard';
+import { Doctors } from '../../libs/dto/doctors/doctor';
 
 @Resolver()
 export class MemberResolver {
@@ -64,12 +65,12 @@ export class MemberResolver {
 	}
 
 	@UseGuards(WithoutGuard)
-	@Query(() => Members)
+	@Query(() => Doctors) 
 	public async getDoctors(
-		@Args('input') input: DoctorsInquiry,
-		@AuthMember('_id') memberId: ObjectId,
-	): Promise<Members> {
-		console.log('Query: Doctors');
+		@Args('input') input: DoctorsInquiry, 
+		@AuthMember('_id') memberId: ObjectId
+	): Promise<Doctors> {
+		console.log("Query: getDoctors");
 		return await this.memberService.getDoctors(memberId, input);
 	}
 

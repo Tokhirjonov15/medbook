@@ -10,6 +10,7 @@ import { DoctorsResolver } from './doctors.resolver';
     MongooseModule.forFeature([{name: "Doctor", schema: DoctorProfileSchema}]), 
     AuthModule,
   ],
-  providers: [DoctorsService, DoctorsResolver]
+  providers: [DoctorsService, DoctorsResolver],
+  exports: [DoctorsService],
 })
 export class DoctorModule {}

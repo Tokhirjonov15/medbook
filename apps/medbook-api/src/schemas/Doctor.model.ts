@@ -20,7 +20,7 @@ const DoctorProfileSchema = new Schema(
 
     memberNick: {
       type: String,
-      ref: 'Member',
+      ref: 'members',
       required: true,
     },
 

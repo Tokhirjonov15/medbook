@@ -15,8 +15,8 @@ export class DoctorsResolver {
 	}
 
 	@Mutation(() => Doctor)
-		public async DoctorLogin(@Args('input') input: LoginInput): Promise<Doctor> {
-			console.log('Mutation: login');
-			return await this.doctorsService.DoctorLogin(input);
-		}
+	public async DoctorLogin(@Args('input') input: LoginInput): Promise<Doctor> {
+		console.log('Mutation: login');
+		return await this.doctorsService.DoctorLogin(input);
+	}
 }
