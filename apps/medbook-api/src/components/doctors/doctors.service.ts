@@ -1,11 +1,13 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Doctor } from '../../libs/dto/doctors/doctor';
+import { Doctor, Doctors } from '../../libs/dto/doctors/doctor';
 import { Model } from 'mongoose';
 import { AuthService } from '../auth/auth.service';
 import { DoctorSignupInput } from '../../libs/dto/doctors/doctor.input';
-import { Message } from '../../libs/enums/common.enum';
-import { LoginInput } from '../../libs/dto/members/member.input';
+import { Direction, Message } from '../../libs/enums/common.enum';
+import { DoctorsInquiry, LoginInput } from '../../libs/dto/members/member.input';
+import { T } from '../../libs/types/common';
+import { DoctorUpdate } from '../../libs/dto/doctors/doctor.update';
 
 @Injectable()
 export class DoctorsService {
@@ -54,4 +56,55 @@ export class DoctorsService {
 		
 		return response;
 	}
+
+	public async getAllDoctorsByAdmin(input: DoctorsInquiry): Promise<Doctors> {
+		const { text } = input.search;
+		const match: T = {};
+		const sort: T = { [input?.sort ?? "createdAt"]: input?.direction ?? Direction.DESC };
+
+		if (text) {
+			match.$or = [
+				{ memberNick: { $regex: new RegExp(text, "i") } },
+				{ memberFullName: { $regex: new RegExp(text, "i") } },
+				{ specializations: { $in: [new RegExp(text, "i")] } }
+			];
+		}
+
+		const result = await this.memberModel.aggregate([
+			{ $match: match },
+			{ $sort: sort },
+			{
+				$facet: {
+					list: [
+						{ $skip: (input.page - 1) * input.limit }, 
+						{ $limit: input.limit }
+					],
+					metaCounter: [{ $count: "total" }],
+				},
+			},
+		]).exec();
+
+		if (!result.length || !result[0].list.length) {
+			throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+		}
+
+		return result[0];
+	}
+
+	public async updateDoctorByAdmin(input: DoctorUpdate): Promise<Doctor> {
+        const { _id, ...updateData } = input;
+        const result = await this.memberModel
+            .findByIdAndUpdate(
+                _id,
+                updateData,
+                { new: true }
+            )
+            .exec();
+			
+        if (!result) {
+            throw new InternalServerErrorException(Message.UPDATE_FAILED);
+        }
+
+        return result;
+    }
 }

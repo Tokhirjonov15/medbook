@@ -8,9 +8,9 @@ import { Gender } from '../libs/enums/gender.enum';
 const DoctorProfileSchema = new Schema(
   {
     memberType: {
-        type: String,
-        enum: MemberType,
-        default: MemberType.DOCTOR,
+      type: String,
+      enum: MemberType,
+      default: MemberType.DOCTOR,
     },
 
     memberGender: {
@@ -40,6 +40,11 @@ const DoctorProfileSchema = new Schema(
         type: String,
     },
 
+    memberDesc: {
+        type: String,
+        default: "",
+    },
+
     memberImage: {
         type: String,
         default: '',
@@ -57,14 +62,6 @@ const DoctorProfileSchema = new Schema(
       required: true,
     },
 
-    qualifications: [
-      {
-        degree: String,
-        institution: String,
-        year: Number,
-      },
-    ],
-
     experience: {
       type: Number,
     },
@@ -74,19 +71,12 @@ const DoctorProfileSchema = new Schema(
       default: [],
     },
 
-    clinicDetails: {
-      name: String,
-      address: {
-        street: String,
-        city: String,
-        state: String,
-        zipCode: String,
-        coordinates: {
-          lat: Number,
-          lng: Number,
-        },
-      },
-      phone: String,
+    clinicAddress: {
+      type: String,
+    },
+
+    clinicName: {
+      type: String,
     },
 
     consultationFee: {
@@ -99,30 +89,20 @@ const DoctorProfileSchema = new Schema(
       default: ConsultationType.BOTH,
     },
 
-    availability: [
-      {
-        day: {
-          type: String,
-          enum: DayOfWeek,
-        },
-        isAvailable: {
-          type: Boolean,
-          default: true,
-        },
-        slots: [
-          {
-            startTime: String,
-            endTime: String,
-            breakTime: {
-              start: String,
-              end: String,
-            },
-          },
-        ],
-      },
-    ],
+    workingDays: {
+      type: String,
+      enum: DayOfWeek,
+    },
 
-    DoctorViews: {
+    workingHours: {
+      type: String,
+    },
+
+    breakTime: {
+      type: String,
+    },
+
+    doctorViews: {
       type: Number,
       default: 0,
     },
@@ -135,13 +115,6 @@ const DoctorProfileSchema = new Schema(
     awards: {
       type: [String],
       default: [],
-    },
-
-    bankDetails: {
-      accountName: String,
-      accountNumber: String,
-      bankName: String,
-      ifscCode: String,
     },
   },
   {

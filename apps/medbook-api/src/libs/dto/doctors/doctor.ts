@@ -17,6 +17,9 @@ export class Doctor {
   @Field(() => String)
   memberPhone: string;
 
+  @Field(() => String)
+  memberDesc: string;
+
   memberPassword?: string;
 
   @Field(() => String)
@@ -46,8 +49,23 @@ export class Doctor {
   @Field(() => String, { nullable: true })
   accessToken?: string;
 
+  @Field(() => String, { nullable: true })
+  clinicAddress?: string;
+
+  @Field(() => String, { nullable: true })
+  clinicName?: string;
+
+  @Field(() => String, { nullable: true })
+  workingDays?: string;
+
+  @Field(() => String, { nullable: true })
+  workingHours?: string;
+
+  @Field(() => String, { nullable: true })
+  breakTime?: string;
+
   @Field(() => Int)
-  DoctorViews: number;
+  doctorViews: number;
 
   @Field(() => Int)
   reviewCount: number;

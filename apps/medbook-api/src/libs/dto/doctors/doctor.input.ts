@@ -71,4 +71,20 @@ export class DoctorSignupInput {
   @IsOptional()
   @Field(() => String, { nullable: true })
   memberImage?: string;
+
+  @IsOptional()
+  @Field(() => String, { nullable: true })
+  memberDesc?: string;
+
+  @IsOptional()
+  @Field(() => String, { nullable: true })
+  workingDays?: string;
+
+  @IsOptional()
+  @Field(() => String, { nullable: true })
+  workingHours?: string;
+
+  @IsOptional()
+  @Field(() => String, { nullable: true })
+  breakTime?: string;
 }
