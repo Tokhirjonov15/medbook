@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { MemberService } from './member.service';
 import { UseGuards } from '@nestjs/common';
-import { DoctorsInquiry, LoginInput, SignupInput } from '../../libs/dto/members/member.input';
+import { DoctorsInquiry, LoginInput, MembersInquiry, SignupInput } from '../../libs/dto/members/member.input';
 import { Member, Members } from '../../libs/dto/members/member';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
@@ -78,16 +78,20 @@ export class MemberResolver {
 
 	// Authorization: ADMIN
 	@Roles(MemberType.ADMIN)
-	@UseGuards(RolesGuard)
-	@Mutation(() => String)
-	public async getAllmembersByAdmin(@AuthMember() authMember: Member): Promise<string> {
-		console.log('authMember.memberType', authMember.memberType);
-		return await this.memberService.getAllmembersByAdmin();
-	}
+    @UseGuards(RolesGuard)
+    @Query(() => Members)
+    public async getAllMembersByAdmin(
+        @Args('input') input: MembersInquiry
+    ): Promise<Members> {
+        return await this.memberService.getAllMembersByAdmin(input);
+    }
 
 	// Authorization: ADMIN
-	@Mutation(() => String)
-	public async updateMemberByAdmin(): Promise<string> {
-		return await this.memberService.updateMemberByAdmin();
-	}
+    @Roles(MemberType.ADMIN)
+    @UseGuards(RolesGuard)
+    @Mutation(() => Member)
+    public async updateMemberByAdmin(@Args('input') input: MemberUpdate): Promise<Member> {
+        console.log("Mutation: updateMemberByAdmin");
+        return await this.memberService.updateMemberByAdmin(input);
+    }
 }
