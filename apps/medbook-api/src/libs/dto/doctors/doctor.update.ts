@@ -3,12 +3,11 @@ import { IsOptional, IsArray, IsEnum, IsNumber, Min, Length } from 'class-valida
 import type { ObjectId } from 'mongoose';
 import { Gender } from '../../enums/gender.enum';
 import { Specialization } from '../../enums/specialization.enum';
-import { ConsultationType } from '../../enums/consultation.enum';
 
 @InputType()
 export class DoctorUpdate {
     @Field(() => String)
-    _id: ObjectId;
+    _id?: ObjectId;
 
     @IsOptional()
     @Length(3, 15)
@@ -68,16 +67,16 @@ export class DoctorUpdate {
     consultationType?: string;
 
     @IsOptional()
-    @Field(() => String, { nullable: true })
-    workingDays?: string;
+    @Field(() => [String], { nullable: true })
+    workingDays?: string[];
 
     @IsOptional()
-    @Field(() => String, { nullable: true })
-    workingHours?: string;
+    @Field(() => [String], { nullable: true })
+    workingHours?: string[];
 
     @IsOptional()
-    @Field(() => String, { nullable: true })
-    breakTime?: string;
+    @Field(() => [String], { nullable: true })
+    breakTime?: string[];
 
     @IsOptional()
     @Field(() => String, { nullable: true })

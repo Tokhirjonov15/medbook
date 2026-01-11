@@ -55,14 +55,14 @@ export class Doctor {
   @Field(() => String, { nullable: true })
   clinicName?: string;
 
-  @Field(() => String, { nullable: true })
-  workingDays?: string;
+  @Field(() => [String], { nullable: true })
+  workingDays?: string[];
 
-  @Field(() => String, { nullable: true })
-  workingHours?: string;
+  @Field(() => [String], { nullable: true })
+  workingHours?: string[];
 
-  @Field(() => String, { nullable: true })
-  breakTime?: string;
+  @Field(() => [String], { nullable: true })
+  breakTime?: string[];
 
   @Field(() => Int)
   doctorViews: number;

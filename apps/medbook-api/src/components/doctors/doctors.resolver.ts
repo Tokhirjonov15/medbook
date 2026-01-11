@@ -8,6 +8,9 @@ import { UseGuards } from '@nestjs/common';
 import { MemberType } from '../../libs/enums/member.enum';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { DoctorUpdate } from '../../libs/dto/doctors/doctor.update';
+import { AuthGuard } from '../auth/guards/auth.guard';
+import type { ObjectId } from 'mongoose';
+import { AuthMember } from '../auth/decorators/authMember.decorator';
 
 @Resolver()
 export class DoctorsResolver {
@@ -23,6 +26,17 @@ export class DoctorsResolver {
 	public async DoctorLogin(@Args('input') input: LoginInput): Promise<Doctor> {
 		console.log('Mutation: login');
 		return await this.doctorsService.DoctorLogin(input);
+	}
+
+	@UseGuards(AuthGuard)
+	@Mutation(() => Doctor)
+	public async updateDoctor(
+		@Args('input') input: DoctorUpdate,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<Doctor> {
+		console.log('Mutation: updateMember');
+		delete input._id;
+		return await this.doctorsService.updateDoctor(memberId, input);
 	}
 
 	@Roles(MemberType.ADMIN)

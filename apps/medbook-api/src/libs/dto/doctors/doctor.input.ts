@@ -77,14 +77,14 @@ export class DoctorSignupInput {
   memberDesc?: string;
 
   @IsOptional()
-  @Field(() => String, { nullable: true })
-  workingDays?: string;
+  @Field(() => [String], { nullable: true })
+  workingDays?: string[];
 
   @IsOptional()
-  @Field(() => String, { nullable: true })
-  workingHours?: string;
+  @Field(() => [String], { nullable: true })
+  workingHours?: string[];
 
   @IsOptional()
-  @Field(() => String, { nullable: true })
-  breakTime?: string;
+  @Field(() => [String], { nullable: true })
+  breakTime?: string[];
 }

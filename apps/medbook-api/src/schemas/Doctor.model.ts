@@ -90,16 +90,16 @@ const DoctorProfileSchema = new Schema(
     },
 
     workingDays: {
-      type: String,
+      type: [String],
       enum: DayOfWeek,
     },
 
     workingHours: {
-      type: String,
+      type: [String],
     },
 
     breakTime: {
-      type: String,
+      type: [String],
     },
 
     doctorViews: {
