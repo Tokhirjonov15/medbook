@@ -2,10 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { T } from '../../libs/types/common';
+import { ForgotPasswordInput } from '../../libs/dto/auth/forgotPassword';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Member } from '../../libs/dto/members/member';
+import { Doctor } from '../../libs/dto/doctors/doctor';
 
 @Injectable()
 export class AuthService {
-    constructor(private jwtService: JwtService) {}
+    constructor(
+        @InjectModel('Member') private readonly memberModel: Model<Member>,
+        @InjectModel('Doctor') private readonly doctorModel: Model<Doctor>,
+        private jwtService: JwtService
+    ) {}
 
     public async hashPassword(password: string): Promise<string> {
         const salt = await bcrypt.genSalt();
@@ -31,5 +40,35 @@ export class AuthService {
     public async verifyToken<T = any>(token: string): Promise<T> {
         const decoded = await this.jwtService.verifyAsync(token);
         return decoded;
+    }
+
+    public async verifyMemberCredentials(input: ForgotPasswordInput): Promise<boolean> {
+        const { memberNick, memberPhone } = input;
+        const member = await this.doctorModel
+            .findOne({ 
+                memberNick: memberNick,
+                memberPhone: memberPhone 
+            })
+        .exec();
+
+        if (member) {
+            console.log('Member found:', memberNick);
+            return true;
+        }
+
+        const doctor = await this.memberModel
+            .findOne({ 
+                memberNick: memberNick,
+                memberPhone: memberPhone 
+            })
+        .exec();
+
+        if (doctor) {
+            console.log('Doctor found:', memberNick);
+            return true;
+        }
+
+        console.log(' User not found or credentials mismatch');
+        return false;
     }
 }
