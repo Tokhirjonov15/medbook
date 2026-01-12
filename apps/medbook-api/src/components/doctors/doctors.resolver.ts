@@ -11,6 +11,8 @@ import { DoctorUpdate } from '../../libs/dto/doctors/doctor.update';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import type { ObjectId } from 'mongoose';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
+import { WithoutGuard } from '../auth/guards/without.guard';
+import { shapeIntoMongoObjectId } from '../../libs/config';
 
 @Resolver()
 export class DoctorsResolver {
@@ -58,4 +60,15 @@ export class DoctorsResolver {
         console.log("Mutation: updateDoctorByAdmin");
         return await this.doctorsService.updateDoctorByAdmin(input);
     }
+
+	@UseGuards(WithoutGuard)
+	@Query(() => Doctor)
+	public async getDoctor(
+		@Args('doctorId') input: string,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<Doctor> {
+		console.log("Query: getDoctor");
+		const doctorId = shapeIntoMongoObjectId(input);
+		return await this.doctorsService.getDoctor(memberId, doctorId);
+}
 }

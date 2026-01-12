@@ -7,12 +7,14 @@ import { AuthModule } from '../auth/auth.module';
 import DoctorProfileSchema from '../../schemas/Doctor.model';
 import { DoctorModule } from '../doctors/doctors.module';
 import { ViewModule } from '../view/view.module';
+import ViewSchema from '../../schemas/View.model';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       {name: "Member", schema: MemberSchema},
       { name: 'Doctor', schema: DoctorProfileSchema },
+      { name: 'View', schema: ViewSchema },
     ]),
     AuthModule,
     DoctorModule,
