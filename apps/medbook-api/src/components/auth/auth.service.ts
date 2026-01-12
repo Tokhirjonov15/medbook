@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Member } from '../../libs/dto/members/member';
 import { Doctor } from '../../libs/dto/doctors/doctor';
+import { ResetPasswordInput } from '../../libs/dto/auth/resetPassword';
 
 @Injectable()
 export class AuthService {
@@ -69,6 +70,50 @@ export class AuthService {
         }
 
         console.log(' User not found or credentials mismatch');
+        return false;
+    }
+
+    public async resetPassword(input: ResetPasswordInput): Promise<boolean> {
+        const { memberNick, memberPhone, newPassword } = input;
+        const hashedPassword = await this.hashPassword(newPassword);
+
+        const memberUpdate = await this.memberModel
+            .findOneAndUpdate(
+                { 
+                    memberNick: memberNick,
+                    memberPhone: memberPhone 
+                },
+                { 
+                    $set: { memberPassword: hashedPassword } 
+                },
+                { new: true }
+            )
+            .exec();
+
+        if (memberUpdate) {
+            console.log('Member password updated:', memberNick);
+            return true;
+        }
+
+        const doctorUpdate = await this.doctorModel
+            .findOneAndUpdate(
+                { 
+                    memberNick: memberNick,
+                    memberPhone: memberPhone 
+                },
+                { 
+                    $set: { memberPassword: hashedPassword } 
+                },
+                { new: true }
+            )
+            .exec();
+
+        if (doctorUpdate) {
+            console.log('✅ Doctor password updated:', memberNick);
+            return true;
+        }
+
+        console.log('Password reset failed');
         return false;
     }
 }
