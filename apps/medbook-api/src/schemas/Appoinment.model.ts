@@ -5,13 +5,6 @@ import { PaymentStatus } from '../libs/enums/payment.enum';
 
 const AppointmentSchema = new Schema(
   {
-    appointmentNumber: {
-      type: String,
-      required: true,
-      unique: true,
-      index: true,
-    },
-
     patient: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -74,10 +67,6 @@ const AppointmentSchema = new Schema(
       enum: PaymentStatus,
       default: PaymentStatus.PENDING,
       index: true,
-    },
-
-    paymentIntentId: {
-      type: String,
     },
 
     paidAt: {
@@ -143,7 +132,6 @@ const AppointmentSchema = new Schema(
 );
 
 // Indexes
-AppointmentSchema.index({ appointmentNumber: 1 });
 AppointmentSchema.index({ patient: 1, appointmentDate: -1 });
 AppointmentSchema.index({ doctor: 1, appointmentDate: -1 });
 AppointmentSchema.index({ status: 1 });

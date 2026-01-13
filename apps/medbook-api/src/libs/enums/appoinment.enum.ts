@@ -8,7 +8,6 @@ export enum AppointmentStatus {
   CANCELLED = 'CANCELLED',
   NO_SHOW = 'NO_SHOW',
 }
-
 registerEnumType(AppointmentStatus, {
   name: 'AppointmentStatus',
   description: 'Status of an appointment',

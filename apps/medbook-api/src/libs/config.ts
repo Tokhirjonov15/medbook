@@ -1,6 +1,6 @@
 import { ObjectId } from "bson";
 
-export const availableDoctorSorts = ["createdAt", "updatedAt", "rating"];
+export const availableDoctorSorts = ["createdAt", "updatedAt", "rating", "doctorViews"];
 export const availableMemberSorts = ["createdAt", "updatedAt"];
 
 /** IMAGE CONFIGURATION */
