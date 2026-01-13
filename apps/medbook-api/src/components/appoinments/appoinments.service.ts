@@ -1,12 +1,14 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId } from 'mongoose';
-import { Appointment } from '../../libs/dto/appoinment/appoinment';
-import { Message } from '../../libs/enums/common.enum';
-import { BookAppointmentInput } from '../../libs/dto/appoinment/appoinment.input';
+import { Model, Types } from 'mongoose';
+import type { ObjectId } from 'mongoose';
+import { Appointment, Appointments } from '../../libs/dto/appoinment/appoinment';
+import { Direction, Message } from '../../libs/enums/common.enum';
+import { AppointmentsInquiry, BookAppointmentInput } from '../../libs/dto/appoinment/appoinment.input';
 import { AppointmentStatus } from '../../libs/enums/appoinment.enum';
 import { PaymentStatus } from '../../libs/enums/payment.enum';
 import { Doctor } from '../../libs/dto/doctors/doctor';
+import { T } from '../../libs/types/common';
 
 @Injectable()
 export class AppoinmentsService {
@@ -82,4 +84,65 @@ export class AppoinmentsService {
             throw err;
         }
     }
+
+    public async getMyAppointments(
+        memberId: string,
+        input: AppointmentsInquiry
+    ): Promise<Appointments> {
+        const patientId = new Types.ObjectId(memberId);
+        const { search } = input;
+        const match: T = {
+            patient: patientId
+        };
+        const sort: T = {
+            [input?.sort ?? 'appointmentDate']: input?.direction ?? Direction.DESC
+        };
+
+        if (search?.status) {
+            match.status = search.status;
+        }
+        if (search?.dateFrom || search?.dateTo) {
+            match.appointmentDate = {};
+
+            if (search.dateFrom) {
+                match.appointmentDate.$gte = new Date(search.dateFrom);
+            }
+
+            if (search.dateTo) {
+                match.appointmentDate.$lte = new Date(search.dateTo);
+            }
+        }
+
+        const pipeline = [
+            { $match: match },
+            { $sort: sort },
+            {
+                $facet: {
+                    list: [
+                        { $skip: (input.page - 1) * input.limit },
+                        { $limit: input.limit },
+                        {
+                            $lookup: {
+                                from: 'doctors',
+                                localField: 'doctor',
+                                foreignField: '_id',
+                                as: 'doctorData'
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: '$doctorData',
+                                preserveNullAndEmptyArrays: true
+                            }
+                        }
+                    ],
+                    metaCounter: [{ $count: 'total' }]
+                }
+            }
+        ];
+
+        const result = await this.appointmentModel.aggregate(pipeline);
+        return result[0];
+    }
+
 }
