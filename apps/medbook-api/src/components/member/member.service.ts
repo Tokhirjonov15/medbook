@@ -10,6 +10,7 @@ import { MemberUpdate } from '../../libs/dto/members/member.update';
 import { T } from '../../libs/types/common';
 import { Doctor, Doctors } from '../../libs/dto/doctors/doctor';
 import { DoctorsService } from '../doctors/doctors.service';
+import { shapeIntoMongoObjectId } from '../../libs/config';
 
 @Injectable()
 export class MemberService {
@@ -91,6 +92,9 @@ export class MemberService {
 		const match: T = {}; 
 		const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
 
+		this.shapeMatchQuery(match, input);
+        console.log("match:", match);
+
 		if (text) {
 			match.$or = [
 				{ memberNick: { $regex: new RegExp(text, 'i') } },
@@ -124,6 +128,28 @@ export class MemberService {
 
 		return result[0];
 	}
+
+	private shapeMatchQuery(match: T, input: DoctorsInquiry): void {
+        const {
+            memberId,
+            specializationList,
+            consultationTypeList,
+            pricesRange,
+            text,
+        } = input.search;
+        if(memberId) match.memberId = shapeIntoMongoObjectId(memberId);
+        if (specializationList) {
+			match.specialization = {
+				$in: Array.isArray(specializationList)
+					? specializationList
+					: [specializationList],
+			};
+		};
+        if(consultationTypeList) match.consultationType = { $in: consultationTypeList };
+
+        if(pricesRange) match.consultationFee = { $gte: pricesRange.start, $lte: pricesRange.end };
+        if(text) match.memberNick = { $regex: new RegExp(text, 'i')};
+    }
 
 	public async getAllMembersByAdmin(input: MembersInquiry): Promise<Members> {
 		const { memberType, text } = input.search;

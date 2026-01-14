@@ -10,6 +10,9 @@ import { Gender } from '../../enums/gender.enum';
 import { MemberType } from '../../enums/member.enum';
 import { availableDoctorSorts, availableMemberSorts } from '../../config';
 import { Direction } from '../../enums/common.enum';
+import type { ObjectId } from 'mongoose';
+import { Specialization } from '../../enums/specialization.enum';
+import { ConsultationType } from '../../enums/consultation.enum';
 
 @InputType()
 export class SignupInput {
@@ -50,7 +53,32 @@ export class LoginInput {
 }
 
 @InputType()
-class AISearch {
+export class PricesRange {
+    @Field(() => Int)
+    start: number;
+
+    @Field(() => Int)
+    end: number;
+}
+
+@InputType()
+class DISearch {
+    @IsOptional()
+    @Field(() => String, {nullable: true})
+    memberId?: ObjectId;
+
+    @IsOptional()
+    @Field(() => Specialization, {nullable: true})
+    specializationList?: Specialization;
+
+    @IsOptional()
+    @Field(() => ConsultationType, {nullable: true})
+    consultationTypeList?: ConsultationType;
+
+    @IsOptional()
+    @Field(() => PricesRange, {nullable: true})
+    pricesRange?: PricesRange;
+    
     @IsOptional()
     @Field(() => String, { nullable: true })
     text?: string;
@@ -78,8 +106,8 @@ export class DoctorsInquiry {
     direction?: Direction;
 
     @IsNotEmpty()
-    @Field(() => AISearch)
-    search: AISearch;
+    @Field(() => DISearch)
+    search: DISearch;
 }
 
 @InputType()
