@@ -145,4 +145,64 @@ export class AppoinmentsService {
         return result[0];
     }
 
+    public async getDoctorAppointments(
+        doctorId: string,
+        input: AppointmentsInquiry
+    ): Promise<Appointments> {
+        const doctorObjectId = new Types.ObjectId(doctorId);
+        const { search } = input;
+        const match: T = {
+            doctor: doctorObjectId
+        };
+        const sort: T = {
+            [input?.sort ?? 'appointmentDate']:
+                input?.direction ?? Direction.DESC
+        };
+
+        if (search?.status) {
+            match.status = search.status;
+        }
+        if (search?.dateFrom || search?.dateTo) {
+            match.appointmentDate = {};
+
+            if (search.dateFrom) {
+                match.appointmentDate.$gte = new Date(search.dateFrom);
+            }
+            if (search.dateTo) {
+                match.appointmentDate.$lte = new Date(search.dateTo);
+            }
+        }
+
+        const pipeline = [
+            { $match: match },
+            { $sort: sort },
+            {
+                $facet: {
+                    list: [
+                        { $skip: (input.page - 1) * input.limit },
+                        { $limit: input.limit },
+                        {
+                            $lookup: {
+                                from: 'members',
+                                localField: 'patient',
+                                foreignField: '_id',
+                                as: 'patientData'
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: '$patientData',
+                                preserveNullAndEmptyArrays: true
+                            }
+                        }
+                    ],
+                    metaCounter: [{ $count: 'total' }]
+                }
+            }
+        ];
+
+        const result = await this.appointmentModel.aggregate(pipeline);
+
+        return result[0];
+    }
 }

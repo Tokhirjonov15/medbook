@@ -34,4 +34,15 @@ export class AppoinmentsResolver {
         console.log("Query: getMyAppoinments");
         return await this.appoinmentService.getMyAppointments(memberId, input);
     }
+
+    @Roles(MemberType.DOCTOR)
+    @UseGuards(RolesGuard)
+    @Query(() => Appointments)
+    public async getDoctorAppointments(
+        @Args('input') input: AppointmentsInquiry,
+        @AuthMember('_id') memberId: string,
+    ): Promise<Appointments> {
+        console.log("Query: getDoctorAppointments");
+        return await this.appoinmentService.getDoctorAppointments(memberId, input);
+    }
 }
