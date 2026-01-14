@@ -8,6 +8,7 @@ import { Appointment, Appointments } from '../../libs/dto/appoinment/appoinment'
 import { AppointmentsInquiry, BookAppointmentInput } from '../../libs/dto/appoinment/appoinment.input';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
 import type { ObjectId } from 'mongoose';
+import { shapeIntoMongoObjectId } from '../../libs/config';
 
 @Resolver()
 export class AppoinmentsResolver {
@@ -44,5 +45,18 @@ export class AppoinmentsResolver {
     ): Promise<Appointments> {
         console.log("Query: getDoctorAppointments");
         return await this.appoinmentService.getDoctorAppointments(memberId, input);
+    }
+
+    @Roles(MemberType.PATIENT)
+    @UseGuards(RolesGuard)
+    @Mutation(() => Appointment)
+    public async cancelAppointment(
+        @Args('appionmentId') appointmentId: string,
+        @Args('reason') reason: string,
+        @AuthMember('_id') memberId: string,
+    ): Promise<Appointment> {
+        console.log("Mutation: cancelAppointments");
+        const id = shapeIntoMongoObjectId(appointmentId);
+        return await this.appoinmentService.cancelAppointment(memberId, id, reason);
     }
 }

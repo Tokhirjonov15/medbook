@@ -205,4 +205,41 @@ export class AppoinmentsService {
 
         return result[0];
     }
+
+    public async cancelAppointment(memberId: string, appointmentId: ObjectId, reason: string): Promise<Appointment> {
+        const appointment = await this.appointmentModel.findById(appointmentId).exec();
+
+        if (!appointment) {
+            throw new BadRequestException(Message.NO_DATA_FOUND);
+        }
+
+        // ✅ Faqat patient o'z appointmentini cancel qila oladi
+        if (appointment.patient.toString() !== memberId.toString()) {
+            throw new BadRequestException('You can only cancel your own appointments');
+        }
+
+        // ✅ Faqat SCHEDULED yoki CONFIRMED statusdagi appointmentlarni cancel qilish mumkin
+        if (![AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED].includes(appointment.status)) {
+            throw new BadRequestException('Cannot cancel this appointment');
+        }
+
+        const result = await this.appointmentModel.findByIdAndUpdate(
+            appointmentId,
+            {
+                $set: {
+                    status: AppointmentStatus.CANCELLED,
+                    cancelledBy: memberId,
+                    cancellationReason: reason,
+                    cancelledAt: new Date()
+                }
+            },
+            { new: true }
+        ).exec();
+
+        if (!result) {
+            throw new InternalServerErrorException(Message.UPDATE_FAILED);
+        }
+
+        return result;
+    }
 }
