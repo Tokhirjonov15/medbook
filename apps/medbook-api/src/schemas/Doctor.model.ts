@@ -50,6 +50,46 @@ const DoctorProfileSchema = new Schema(
         default: '',
     },
 
+    totalPatients: {
+      type: Number,
+      default: 0,
+    },
+
+    memberArticles: {
+        type: Number,
+        default: 0,
+    },
+
+    memberFollowers: {
+        type: Number,
+        default: 0,
+    },
+
+    memberFollowings: {
+        type: Number,
+        default: 0,
+    },
+
+    memberLikes: {
+        type: Number,
+        default: 0,
+    },
+
+    memberComments: {
+        type: Number,
+        default: 0,
+    },
+
+    memberWarnings: {
+        type: Number,
+        default: 0,
+    },
+
+    memberBlocks: {
+        type: Number,
+        default: 0,
+    },
+
     licenseNumber: {
       type: String,
       required: true,

@@ -1,4 +1,4 @@
-import { Field, ObjectType, ID } from '@nestjs/graphql';
+import { Field, ObjectType, ID, Int } from '@nestjs/graphql';
 import { Gender } from '../../enums/gender.enum';
 import type { ObjectId } from 'mongoose';
 import { MemberStatus, MemberType } from '../../enums/member.enum';
@@ -69,6 +69,24 @@ export class Member {
 
   @Field(() => Gender, { nullable: true })
   memberGender?: Gender;
+
+  @Field(() => Int)
+  memberArticles: number;
+
+  @Field(() => Int)
+  memberFollowers: number;
+
+  @Field(() => Int)
+  memberFollowings: number;
+
+  @Field(() => Int)
+  memberComments: number;
+
+  @Field(() => Int)
+  memberWarnings: number;
+
+  @Field(() => Int)
+  memberBlocks: number;
 
   @Field(() => Address, { nullable: true })
   memberAddress?: Address;

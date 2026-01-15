@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import AppointmentSchema from '../../schemas/Appoinment.model';
 import DoctorProfileSchema from '../../schemas/Doctor.model';
 import { AuthModule } from '../auth/auth.module';
+import { DoctorModule } from '../doctors/doctors.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { AuthModule } from '../auth/auth.module';
             { name: 'Doctor', schema: DoctorProfileSchema },
         ]),
         AuthModule,
+        DoctorModule,
     ],
     providers: [AppoinmentsService, AppoinmentsResolver],
     exports: [AppoinmentsService],

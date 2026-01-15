@@ -6,7 +6,7 @@ import { AuthService } from '../auth/auth.service';
 import { DoctorSignupInput } from '../../libs/dto/doctors/doctor.input';
 import { Direction, Message } from '../../libs/enums/common.enum';
 import { DoctorsInquiry, LoginInput } from '../../libs/dto/members/member.input';
-import { T } from '../../libs/types/common';
+import { StatisticModifier, T } from '../../libs/types/common';
 import { DoctorUpdate } from '../../libs/dto/doctors/doctor.update';
 import { ViewInput } from '../../libs/dto/view/view.input';
 import { ViewGroup } from '../../libs/enums/view.enum';
@@ -175,4 +175,22 @@ export class DoctorsService {
 
         return targetDoctor;
     }
+
+    public async doctorStatsEditor(input: StatisticModifier): Promise<Doctor> {
+            const { _id, targetKey, modifier } = input;
+            const result = await this.doctorModel
+                .findByIdAndUpdate(
+                    _id, 
+                    {
+                        $inc: { [targetKey]: modifier }, 
+                    }, 
+                    { new: true }
+                )
+                .exec();
+            if (!result) {
+                throw new InternalServerErrorException(Message.UPDATE_FAILED);
+            }
+    
+            return result;
+        }
 }

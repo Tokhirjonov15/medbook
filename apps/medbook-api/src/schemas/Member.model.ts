@@ -44,6 +44,41 @@ const MemberSchema = new Schema(
       enum: Gender,
     },
 
+    memberArticles: {
+        type: Number,
+        default: 0,
+    },
+
+    memberFollowers: {
+        type: Number,
+        default: 0,
+    },
+
+    memberFollowings: {
+        type: Number,
+        default: 0,
+    },
+
+    memberLikes: {
+        type: Number,
+        default: 0,
+    },
+
+    memberComments: {
+        type: Number,
+        default: 0,
+    },
+
+    memberWarnings: {
+        type: Number,
+        default: 0,
+    },
+
+    memberBlocks: {
+        type: Number,
+        default: 0,
+    },
+
     memberAddress: {
       street: String,
       city: String,

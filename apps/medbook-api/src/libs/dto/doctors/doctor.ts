@@ -22,6 +22,24 @@ export class Doctor {
 
   memberPassword?: string;
 
+  @Field(() => Int)
+  memberArticles: number;
+
+  @Field(() => Int)
+  memberFollowers: number;
+
+  @Field(() => Int)
+  memberFollowings: number;
+
+  @Field(() => Int)
+  memberComments: number;
+
+  @Field(() => Int)
+  memberWarnings: number;
+
+  @Field(() => Int)
+  memberBlocks: number;
+
   @Field(() => String)
   licenseNumber: string;
 

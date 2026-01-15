@@ -9,12 +9,15 @@ import { AppointmentStatus } from '../../libs/enums/appoinment.enum';
 import { PaymentStatus } from '../../libs/enums/payment.enum';
 import { Doctor } from '../../libs/dto/doctors/doctor';
 import { T } from '../../libs/types/common';
+import { MemberService } from '../member/member.service';
+import { DoctorsService } from '../doctors/doctors.service';
 
 @Injectable()
 export class AppoinmentsService {
     constructor(
         @InjectModel('Appointment') private readonly appointmentModel: Model<Appointment>,
         @InjectModel('Doctor') private readonly doctorModel: Model<Doctor>,
+        private doctorService: DoctorsService,
     )  {}
 
     public async bookAppointment(
@@ -23,28 +26,26 @@ export class AppoinmentsService {
     ): Promise<Appointment> {
         const { doctor, appointmentDate, timeSlot, consultationType, reason, symptoms, notes } = input;
         try {
-            // 1. Check if doctor exists
             const targetDoctor = await this.doctorModel.findById(doctor).exec();
             if (!targetDoctor) {
                 throw new BadRequestException(Message.NO_DATA_FOUND);
             }
 
-            // 2. Check if doctor is available on the selected day
+            //  Working day check
             const appointmentDay = new Date(appointmentDate)
                 .toLocaleDateString('en-US', { weekday: 'long' })
                 .toUpperCase();
 
-            const isDoctorAvailable = targetDoctor.workingDays?.includes(appointmentDay);
-            if (!isDoctorAvailable) {
+            if (!targetDoctor.workingDays?.includes(appointmentDay)) {
                 throw new BadRequestException(Message.SOMETHING_WENT_WRONG);
             }
 
-            // 3. Check for overlapping appointment
+            //  Overlap check
             const appointmentDayStart = new Date(appointmentDate);
-                appointmentDayStart.setHours(0, 0, 0, 0);
+            appointmentDayStart.setHours(0, 0, 0, 0);
 
             const appointmentDayEnd = new Date(appointmentDate);
-                appointmentDayEnd.setHours(23, 59, 59, 999);
+            appointmentDayEnd.setHours(23, 59, 59, 999);
 
             const overlappingAppointments = await this.appointmentModel.find({
                 doctor,
@@ -61,8 +62,8 @@ export class AppoinmentsService {
                 throw new BadRequestException(Message.BAD_REQUEST);
             }
 
-            // 5. Book the appointment
-            const appointmentData = {
+            //  Create appointment
+            const appointment = await this.appointmentModel.create({
                 patient: memberId,
                 doctor,
                 appointmentDate,
@@ -75,13 +76,18 @@ export class AppoinmentsService {
                 consultationFee: targetDoctor.consultationFee,
                 paymentStatus: PaymentStatus.PENDING,
                 reminderSent: false,
-            };
+            });
 
-            const result = await this.appointmentModel.create(appointmentData);
-            return result;
-        } catch (err: any) {
-            console.error('=== BOOK APPOINTMENT ERROR ===');
-            throw err;
+            await this.doctorService.doctorStatsEditor({
+                _id: targetDoctor._id, // ✅ TO‘G‘RI
+                targetKey: "totalPatients",
+                modifier: 1,
+            });
+
+            return appointment;
+        } catch (err) {
+            console.error('=== BOOK APPOINTMENT ERROR ===', err);
+            throw new InternalServerErrorException(err);
         }
     }
 
@@ -206,19 +212,23 @@ export class AppoinmentsService {
         return result[0];
     }
 
-    public async cancelAppointment(memberId: string, appointmentId: ObjectId, reason: string): Promise<Appointment> {
+    public async cancelAppointment(
+        memberId: string,
+        appointmentId: ObjectId,
+        reason: string
+    ): Promise<Appointment> {
         const appointment = await this.appointmentModel.findById(appointmentId).exec();
 
         if (!appointment) {
             throw new BadRequestException(Message.NO_DATA_FOUND);
         }
 
-        // ✅ Faqat patient o'z appointmentini cancel qila oladi
+        // Ownership check
         if (appointment.patient.toString() !== memberId.toString()) {
             throw new BadRequestException('You can only cancel your own appointments');
         }
 
-        // ✅ Faqat SCHEDULED yoki CONFIRMED statusdagi appointmentlarni cancel qilish mumkin
+        // Status check
         if (![AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED].includes(appointment.status)) {
             throw new BadRequestException('Cannot cancel this appointment');
         }
@@ -239,6 +249,12 @@ export class AppoinmentsService {
         if (!result) {
             throw new InternalServerErrorException(Message.UPDATE_FAILED);
         }
+
+        await this.doctorService.doctorStatsEditor({
+            _id: appointment.doctor,
+            targetKey: "totalPatients",
+            modifier: -1,
+        });
 
         return result;
     }
