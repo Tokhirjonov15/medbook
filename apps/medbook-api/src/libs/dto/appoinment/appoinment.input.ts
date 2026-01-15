@@ -1,9 +1,10 @@
 import { InputType, Field, Int } from '@nestjs/graphql';
-import { IsNotEmpty, IsOptional, IsEnum, IsArray, IsDateString, Min, IsString, IsDate } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsEnum, IsArray, IsDateString, Min, IsString, IsDate, IsIn } from 'class-validator';
 import type { ObjectId } from 'mongoose';
 import { ConsultationType } from '../../enums/consultation.enum';
 import { AppointmentStatus } from '../../enums/appoinment.enum';
 import { Direction } from '../../enums/common.enum';
+import { availableAppointmentSorts } from '../../config';
 
 @InputType()
 export class TimeSlotInput {
@@ -98,3 +99,37 @@ export class AppointmentsInquiry {
     @Field(() => AppointmentsInquirySearch, { nullable: true })
     search?: AppointmentsInquirySearch;
 }
+
+@InputType()
+class AAISearch {
+    @IsOptional()
+    @Field(() => AppointmentStatus, {nullable: true})
+    appointmentStatus?: AppointmentStatus;   
+}
+
+@InputType()
+export class AllAppointmentsInquiry {
+    @IsNotEmpty()
+    @Min(1)
+    @Field(() => Int)
+    page: number;
+
+    @IsNotEmpty()
+    @Min(1)
+    @Field(() => Int)
+    limit: number;
+
+    @IsOptional()
+    @IsIn(availableAppointmentSorts)
+    @Field(() => String, { nullable: true })
+    sort?: string;
+
+    @IsOptional()
+    @Field(() => Direction, { nullable: true })
+    direction?: Direction;
+
+    @IsOptional()
+    @Field(() => AAISearch)
+    search?: AAISearch;
+}
+

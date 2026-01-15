@@ -4,13 +4,14 @@ import { Model, Types } from 'mongoose';
 import type { ObjectId } from 'mongoose';
 import { Appointment, Appointments } from '../../libs/dto/appoinment/appoinment';
 import { Direction, Message } from '../../libs/enums/common.enum';
-import { AppointmentsInquiry, BookAppointmentInput } from '../../libs/dto/appoinment/appoinment.input';
+import { AllAppointmentsInquiry, AppointmentsInquiry, BookAppointmentInput } from '../../libs/dto/appoinment/appoinment.input';
 import { AppointmentStatus } from '../../libs/enums/appoinment.enum';
 import { PaymentStatus } from '../../libs/enums/payment.enum';
 import { Doctor } from '../../libs/dto/doctors/doctor';
 import { T } from '../../libs/types/common';
-import { MemberService } from '../member/member.service';
 import { DoctorsService } from '../doctors/doctors.service';
+import { lookupMember } from '../../libs/config';
+import { AppointmentUpdate } from '../../libs/dto/appoinment/appoinment.update';
 
 @Injectable()
 export class AppoinmentsService {
@@ -149,6 +150,34 @@ export class AppoinmentsService {
 
         const result = await this.appointmentModel.aggregate(pipeline);
         return result[0];
+    }
+
+    public async updateAppointment(
+        memberId: ObjectId,
+        input: AppointmentUpdate
+    ): Promise<Appointment> {
+        const updateData: any = {};
+
+        if (input.appointmentDate) updateData.appointmentDate = input.appointmentDate;
+        if (input.timeSlot) updateData.timeSlot = input.timeSlot;
+        if (input.symptoms) updateData.symptoms = input.symptoms;
+        if (input.notes) updateData.notes = input.notes;
+
+        const result = await this.appointmentModel.findOneAndUpdate(
+            {
+                _id: input._id,
+                patient: memberId,
+                status: AppointmentStatus.SCHEDULED,
+            },
+            { $set: updateData },
+            { new: true }
+        ).exec();
+
+        if (!result) {
+            throw new InternalServerErrorException(Message.UPDATE_FAILED);
+        }
+
+        return result;
     }
 
     public async getDoctorAppointments(

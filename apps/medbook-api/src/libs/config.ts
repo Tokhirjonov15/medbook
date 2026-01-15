@@ -2,6 +2,7 @@ import { ObjectId } from "bson";
 
 export const availableDoctorSorts = ["createdAt", "updatedAt", "rating", "doctorViews"];
 export const availableMemberSorts = ["createdAt", "updatedAt"];
+export const availableAppointmentSorts = ["createdAt", "updatedAt"];
 
 /** IMAGE CONFIGURATION */
 import { v4 as uuidv4 } from 'uuid';
@@ -15,4 +16,13 @@ export const getSerialForImage = (filename: string) => {
 
 export const shapeIntoMongoObjectId = (target: any) => {
     return typeof target === 'string' ? new ObjectId(target) : target;
+};
+
+export const lookupMember = {
+	$lookup: {
+		from: "members",
+		localField: "memberId",
+		foreignField: "_id",
+		as: "memberData",
+	},
 };

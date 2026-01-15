@@ -5,10 +5,11 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { MemberType } from '../../libs/enums/member.enum';
 import { Appointment, Appointments } from '../../libs/dto/appoinment/appoinment';
-import { AppointmentsInquiry, BookAppointmentInput } from '../../libs/dto/appoinment/appoinment.input';
+import { AllAppointmentsInquiry, AppointmentsInquiry, BookAppointmentInput } from '../../libs/dto/appoinment/appoinment.input';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
 import type { ObjectId } from 'mongoose';
 import { shapeIntoMongoObjectId } from '../../libs/config';
+import { AppointmentUpdate } from '../../libs/dto/appoinment/appoinment.update';
 
 @Resolver()
 export class AppoinmentsResolver {
@@ -34,6 +35,21 @@ export class AppoinmentsResolver {
     ): Promise<Appointments> {
         console.log("Query: getMyAppoinments");
         return await this.appoinmentService.getMyAppointments(memberId, input);
+    }
+
+    @Roles(MemberType.PATIENT)
+    @UseGuards(RolesGuard)
+    @Mutation(() => Appointment)
+    public async updateAppointment(
+        @Args('input') input: AppointmentUpdate,
+        @AuthMember('_id') memberId: string,
+    ): Promise<Appointment> {
+        console.log("Mutation: updateAppointment");
+        input._id = shapeIntoMongoObjectId(input._id);
+        return await this.appoinmentService.updateAppointment(
+            shapeIntoMongoObjectId(memberId),
+            input
+        );
     }
 
     @Roles(MemberType.DOCTOR)
