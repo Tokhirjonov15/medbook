@@ -287,4 +287,70 @@ export class AppoinmentsService {
 
         return result;
     }
+
+    public async getAllAppointmentByAdmin(input: AllAppointmentsInquiry): Promise<Appointments> {
+        const match: T = {};
+        const sort: T = { [input?.sort ?? "createdAt"]: input?.direction ?? Direction.DESC };
+        
+        const result = await this.appointmentModel
+            .aggregate([
+                {$match: match},
+                {$sort: sort},
+                {
+                    $facet: {
+                        list: [
+                            { $skip: (input.page - 1) * input.limit }, 
+                            { $limit: input.limit },
+                            lookupMember,
+                            { 
+                                $unwind: {
+                                    path: "$memberData",
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                        ],
+                        metaCounter: [{ $count: "total" }],
+                    },
+                },
+            ])
+            .exec();
+        if(!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+        return result[0];
+    }
+
+    public async updateAppointmentByAdmin(input: AppointmentUpdate): Promise<Appointment> {
+        const { _id } = input;
+        const result = await this.appointmentModel.findOneAndUpdate(
+            _id,
+            input,
+            { new: true }
+        ).exec();
+
+        if (!result) {
+            throw new InternalServerErrorException(Message.UPDATE_FAILED);
+        }
+
+        return result;
+    }
+
+    public async removeAppointmentByAdmin(appointmentId: ObjectId): Promise<Appointment> {
+        const appointment = await this.appointmentModel.findById(appointmentId).exec();
+
+        if (!appointment) {
+            throw new BadRequestException(Message.NO_DATA_FOUND);
+        }
+
+        if (appointment.status !== AppointmentStatus.CANCELLED) {
+            throw new BadRequestException(Message.REMOVE_FAILED);
+        }
+
+        const result = await this.appointmentModel.findByIdAndDelete(appointmentId).exec();
+
+        if (!result) {
+            throw new InternalServerErrorException("Failed to remove appointment");
+        }
+
+        return result;
+    }
 }

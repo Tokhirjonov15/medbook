@@ -75,4 +75,41 @@ export class AppoinmentsResolver {
         const id = shapeIntoMongoObjectId(appointmentId);
         return await this.appoinmentService.cancelAppointment(memberId, id, reason);
     }
+
+    /** ADMIN */
+
+    @Roles(MemberType.ADMIN)
+    @UseGuards(RolesGuard)
+    @Query((returns) => Appointments)
+    public async getAllAppointmentByAdmin(
+        @Args("input") input: AllAppointmentsInquiry,
+        @AuthMember('_id') memberId: ObjectId,
+    ): Promise<Appointments> {
+        console.log("Query: getAllAppointmentByAdmin");
+        return await this.appoinmentService.getAllAppointmentByAdmin(input);
+    }
+
+    @Roles(MemberType.ADMIN)
+    @UseGuards(RolesGuard)
+    @Mutation((returns) => Appointment)
+    public async updateAppointmentByAdmin(
+        @Args("input") input: AppointmentUpdate,
+        @AuthMember('_id') memberId: ObjectId,
+    ): Promise<Appointment> {
+        console.log("Mutation: updateAppointmentByAdmin");
+        input._id = shapeIntoMongoObjectId(input._id);
+        return await this.appoinmentService.updateAppointmentByAdmin(input);
+    }
+
+    @Roles(MemberType.ADMIN)
+    @UseGuards(RolesGuard)
+    @Mutation((returns) => Appointment)
+    public async removeAppointmentByAdmin(
+        @Args("appointmentId") input: string,
+        @AuthMember('_id') memberId: ObjectId,
+    ): Promise<Appointment> {
+        console.log("Mutation: removeAppointmentByAdmin");
+        const appointmentId = shapeIntoMongoObjectId(input);
+        return await this.appoinmentService.removeAppointmentByAdmin(appointmentId);
+    }
 }
