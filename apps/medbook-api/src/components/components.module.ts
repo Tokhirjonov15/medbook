@@ -9,6 +9,7 @@ import { ChatModule } from './chat/chat.module';
 import { AuthModule } from './auth/auth.module';
 import { DoctorModule } from './doctors/doctors.module';
 import { ViewModule } from './view/view.module';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { ViewModule } from './view/view.module';
     NotificationsModule, 
     ChatModule, 
     AuthModule, 
-    ViewModule,
+    ViewModule, PaymentModule,
   ],
 })
 export class ComponentsModule {}

@@ -8,73 +8,77 @@ const PaymentSchema = new Schema(
       ref: 'Appointment',
       required: true,
       unique: true,
-      index: true,
     },
-
+    
     patient: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'Member',
       required: true,
       index: true,
     },
-
+    
     doctor: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'Doctor',
       required: true,
       index: true,
     },
-
+    
     amount: {
       type: Number,
       required: true,
     },
-
+    
     platformFee: {
       type: Number,
       default: 0,
     },
-
+    
     doctorAmount: {
       type: Number,
       required: true,
     },
-
+    
     paymentMethod: {
       type: String,
       enum: PaymentMethod,
-      required: true,
+      default: PaymentMethod.CARD,
     },
-
+    
     status: {
       type: String,
       enum: PaymentStatus,
       default: PaymentStatus.PENDING,
       index: true,
     },
-
-    stripePaymentIntentId: {
+    
+    paymentReferenceId: {
       type: String,
-      index: true,
+      unique: true,
     },
-
-    stripeChargeId: {
-      type: String,
-    },
-
-    refundId: {
+    
+    refundRequestReason: {
       type: String,
     },
-
+    
+    refundRequestedAt: {
+      type: Date,
+    },
+    
+    refundedBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'Member',
+    },
+    
     refundReason: {
       type: String,
     },
-
-    paidAt: {
+    
+    refundedAt: {
       type: Date,
     },
-
-    refundedAt: {
+    
+    paidAt: {
       type: Date,
     },
   },
@@ -84,11 +88,9 @@ const PaymentSchema = new Schema(
   }
 );
 
-// Indexes
 PaymentSchema.index({ appointment: 1 });
 PaymentSchema.index({ patient: 1, createdAt: -1 });
 PaymentSchema.index({ doctor: 1, createdAt: -1 });
 PaymentSchema.index({ status: 1 });
-PaymentSchema.index({ stripePaymentIntentId: 1 });
 
 export default PaymentSchema;
