@@ -3,6 +3,8 @@ import { ObjectId } from "bson";
 export const availableDoctorSorts = ["createdAt", "updatedAt", "rating", "doctorViews"];
 export const availableMemberSorts = ["createdAt", "updatedAt"];
 export const availableAppointmentSorts = ["createdAt", "updatedAt"];
+export const availableBoardArticleSorts = ["createdAt", "updatedAt", "articleLikes", "articleViews"];
+
 
 /** IMAGE CONFIGURATION */
 import { v4 as uuidv4 } from 'uuid';

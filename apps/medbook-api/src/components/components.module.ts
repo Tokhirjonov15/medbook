@@ -11,6 +11,7 @@ import { DoctorModule } from './doctors/doctors.module';
 import { ViewModule } from './view/view.module';
 import { PaymentModule } from './payment/payment.module';
 import { ArticleModule } from './article/article.module';
+import { BoardArticleModule } from './board-article/board-article.module';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { ArticleModule } from './article/article.module';
     NotificationsModule, 
     ChatModule, 
     AuthModule, 
-    ViewModule, PaymentModule, ArticleModule,
+    ViewModule, PaymentModule, ArticleModule, BoardArticleModule,
   ],
 })
 export class ComponentsModule {}
