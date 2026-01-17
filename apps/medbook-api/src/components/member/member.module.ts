@@ -20,6 +20,7 @@ import ViewSchema from '../../schemas/View.model';
     DoctorModule,
     ViewModule,
   ],
-  providers: [MemberService, MemberResolver]
+  providers: [MemberService, MemberResolver],
+  exports: [MemberService],
 })
 export class MemberModule {}

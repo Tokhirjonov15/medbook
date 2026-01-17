@@ -10,7 +10,6 @@ import { AuthModule } from './auth/auth.module';
 import { DoctorModule } from './doctors/doctors.module';
 import { ViewModule } from './view/view.module';
 import { PaymentModule } from './payment/payment.module';
-import { ArticleModule } from './article/article.module';
 import { BoardArticleModule } from './board-article/board-article.module';
 
 @Module({
@@ -24,7 +23,9 @@ import { BoardArticleModule } from './board-article/board-article.module';
     NotificationsModule, 
     ChatModule, 
     AuthModule, 
-    ViewModule, PaymentModule, ArticleModule, BoardArticleModule,
+    ViewModule, 
+    PaymentModule, 
+    BoardArticleModule,
   ],
 })
 export class ComponentsModule {}
