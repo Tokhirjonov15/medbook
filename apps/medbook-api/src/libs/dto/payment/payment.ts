@@ -64,3 +64,60 @@ export class Payments {
   @Field(() => [MetaCounter])
   metaCounter: MetaCounter[];
 }
+
+@ObjectType()
+export class PaymentAppointmentData {
+  @Field(() => ID)
+  _id: string;
+
+  @Field(() => Date)
+  appointmentDate: Date;
+
+  @Field(() => String)
+  timeSlot: string;
+
+  @Field(() => String)
+  status: string;
+}
+
+@ObjectType()
+export class PaymentPatientData {
+  @Field(() => ID)
+  _id: string;
+
+  @Field(() => String)
+  memberNick: string;
+
+  @Field(() => String)
+  memberFullName: string;
+
+  @Field(() => String, { nullable: true })
+  memberPhone?: string;
+}
+
+@ObjectType()
+export class PaymentDoctorData {
+  @Field(() => ID)
+  _id: string;
+
+  @Field(() => String)
+  memberNick: string;
+
+  @Field(() => String)
+  memberFullName: string;
+
+  @Field(() => [String], { nullable: true })
+  specializations?: string[];
+}
+
+@ObjectType()
+export class PaymentRefundedByData {
+  @Field(() => ID)
+  _id: string;
+
+  @Field(() => String)
+  memberNick: string;
+
+  @Field(() => String)
+  memberFullName: string;
+}

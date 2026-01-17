@@ -26,3 +26,39 @@ export const lookupMember = {
 		as: "memberData",
 	},
 };
+
+export const lookupAppointment = {
+	$lookup: {
+		from: 'appointments',
+		localField: 'appointment',
+		foreignField: '_id',
+		as: 'appointmentData',
+	},
+};
+
+export const lookupPatient = {
+	$lookup: {
+		from: 'members',
+		localField: 'patient',
+		foreignField: '_id',
+		as: 'patientData',
+	},
+};
+
+export const lookupDoctor = {
+	$lookup: {
+		from: 'doctor',
+		localField: 'doctor',
+		foreignField: '_id',
+		as: 'doctorData',
+	},
+};
+
+export const lookupRefunded = {
+	$lookup: {
+		from: 'members',
+		localField: 'refundedBy',
+		foreignField: '_id',
+		as: 'refundedByData',
+	},
+};
