@@ -1,5 +1,6 @@
 import { Field, ObjectType, ID, Float } from '@nestjs/graphql';
 import { PaymentStatus, PaymentMethod } from '../../enums/payment.enum';
+import { MetaCounter } from '../doctors/doctor';
 
 @ObjectType()
 export class Payment {
@@ -29,9 +30,6 @@ export class Payment {
 
   @Field(() => PaymentStatus)
   status: PaymentStatus;
-
-  @Field(() => String)
-  paymentReferenceId: string;
 
   @Field(() => String, { nullable: true })
   refundRequestReason?: string;
@@ -65,10 +63,4 @@ export class Payments {
 
   @Field(() => [MetaCounter])
   metaCounter: MetaCounter[];
-}
-
-@ObjectType()
-class MetaCounter {
-  @Field(() => Number)
-  total: number;
 }

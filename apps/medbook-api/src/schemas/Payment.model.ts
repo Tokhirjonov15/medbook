@@ -52,11 +52,6 @@ const PaymentSchema = new Schema(
       index: true,
     },
     
-    paymentReferenceId: {
-      type: String,
-      unique: true,
-    },
-    
     refundRequestReason: {
       type: String,
     },
