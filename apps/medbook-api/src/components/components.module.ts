@@ -11,6 +11,7 @@ import { DoctorModule } from './doctors/doctors.module';
 import { ViewModule } from './view/view.module';
 import { PaymentModule } from './payment/payment.module';
 import { BoardArticleModule } from './board-article/board-article.module';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { BoardArticleModule } from './board-article/board-article.module';
     AuthModule, 
     ViewModule, 
     PaymentModule, 
-    BoardArticleModule,
+    BoardArticleModule, CommentModule,
   ],
 })
 export class ComponentsModule {}
