@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { DoctorModule } from './doctors/doctors.module';
 import { ViewModule } from './view/view.module';
 import { PaymentModule } from './payment/payment.module';
+import { ArticleModule } from './article/article.module';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { PaymentModule } from './payment/payment.module';
     NotificationsModule, 
     ChatModule, 
     AuthModule, 
-    ViewModule, PaymentModule,
+    ViewModule, PaymentModule, ArticleModule,
   ],
 })
 export class ComponentsModule {}
