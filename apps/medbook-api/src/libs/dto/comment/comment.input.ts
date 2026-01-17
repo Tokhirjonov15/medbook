@@ -16,9 +16,13 @@ export class CommentInput {
 	@Field(() => String)
 	commentContent: string;
 
-	@IsNotEmpty()
+	@IsOptional()
 	@Field(() => String)
 	commentRefId: ObjectId;
+
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+    parentCommentId?: string;
 
 	memberId?: ObjectId;
 }

@@ -20,6 +20,11 @@ const CommentSchema = new Schema(
 			required: true,
 		},
 
+		commentLikes: {
+			type: Number,
+			default: 0,
+		},
+
 		commentRefId: {
 			type: Schema.Types.ObjectId,
 			required: true,
@@ -28,6 +33,17 @@ const CommentSchema = new Schema(
 		memberId: {
 			type: Schema.Types.ObjectId,
 			required: true,
+		},
+
+		commentReplies: {
+			type: Number,
+			default: 0,
+		},
+
+		parentCommentId: {
+			type: Schema.Types.ObjectId,
+			ref: 'Comment',
+			default: null,
 		},
 	},
 	{ timestamps: true, collection: 'comments' },

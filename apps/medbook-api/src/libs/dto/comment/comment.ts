@@ -21,6 +21,18 @@ export class Comment {
 	@Field(() => String)
 	commentRefId: ObjectId;
 
+	@Field(() => String, { nullable: true })
+    parentCommentId?: string;
+
+    @Field(() => Int)
+    commentReplies: number;
+
+	@Field(() => Int)
+    commentLikes: number;
+
+	@Field(() => [Comment], { nullable: true })
+    replies?: Comment[];
+
 	@Field(() => String)
 	memberId: ObjectId;
 
