@@ -12,6 +12,7 @@ import { ViewModule } from './view/view.module';
 import { PaymentModule } from './payment/payment.module';
 import { BoardArticleModule } from './board-article/board-article.module';
 import { CommentModule } from './comment/comment.module';
+import { LikeModule } from './like/like.module';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { CommentModule } from './comment/comment.module';
     AuthModule, 
     ViewModule, 
     PaymentModule, 
-    BoardArticleModule, CommentModule,
+    BoardArticleModule, CommentModule, LikeModule,
   ],
 })
 export class ComponentsModule {}
