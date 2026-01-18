@@ -11,6 +11,9 @@ import { StatisticModifier, T } from '../../libs/types/common';
 import { Doctor, Doctors } from '../../libs/dto/doctors/doctor';
 import { DoctorsService } from '../doctors/doctors.service';
 import { shapeIntoMongoObjectId } from '../../libs/config';
+import { LikeInput } from '../../libs/dto/like/like.input';
+import { LikeGroup } from '../../libs/enums/like.enum';
+import { LikeService } from '../like/like.service';
 
 @Injectable()
 export class MemberService {
@@ -19,6 +22,7 @@ export class MemberService {
 		@InjectModel('Doctor') private readonly doctorModel: Model<Doctor>,
 		private authService: AuthService,
 		private doctorsService: DoctorsService,
+		private likeService: LikeService,
 	) {}
 
 	public async signup(input: SignupInput): Promise<Member> {
@@ -74,7 +78,7 @@ export class MemberService {
 		return result;
 	}
 
-	public async getMember(targetId: ObjectId): Promise<Member> {
+	public async getMember(memberId: ObjectId, targetId: ObjectId): Promise<Member> {
 		const search: T = {
 			_id: targetId,
 			memberStatus: {
@@ -83,6 +87,11 @@ export class MemberService {
 		};
 		const targetMember = await this.memberModel.findOne(search).exec();
 		if (!targetMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+		//meLiked
+		const likeInput = {memberId: memberId, likeRefId: targetId, likeGroup: LikeGroup.MEMBER};
+		//@ts-ignore
+		targetMember.meLiked = await this.likeService.checkLikeExistence(likeInput);
 
 		return targetMember;
 	}
@@ -127,6 +136,23 @@ export class MemberService {
 		}
 
 		return result[0];
+	}
+
+	public async likeTargetMember(memberId: ObjectId, likeRefId: ObjectId): Promise<Member> {
+		const target = await this.memberModel.findOne({ _id: likeRefId, memberStatus: MemberStatus.ACTIVE }).exec();
+		if(!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+		const input: LikeInput = {
+			memberId: memberId,
+			likeRefId: likeRefId,
+			likeGroup: LikeGroup.MEMBER
+		};
+
+		const modifier: number = await this.likeService.toggleLike(input);
+		const result = await this.memberStatsEditor({ _id: likeRefId, targetKey: "memberLikes", modifier: modifier });
+
+		if(!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
+		return result;
 	}
 
 	private shapeMatchQuery(match: T, input: DoctorsInquiry): void {

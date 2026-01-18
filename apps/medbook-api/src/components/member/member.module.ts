@@ -8,6 +8,7 @@ import DoctorProfileSchema from '../../schemas/Doctor.model';
 import { DoctorModule } from '../doctors/doctors.module';
 import { ViewModule } from '../view/view.module';
 import ViewSchema from '../../schemas/View.model';
+import { LikeModule } from '../like/like.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import ViewSchema from '../../schemas/View.model';
     AuthModule,
     DoctorModule,
     ViewModule,
+    LikeModule,
   ],
   providers: [MemberService, MemberResolver],
   exports: [MemberService],
