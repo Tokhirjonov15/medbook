@@ -2,7 +2,7 @@ import { Schema } from 'mongoose';
 import { Specialization } from '../libs/enums/specialization.enum';
 import { ConsultationType } from '../libs/enums/consultation.enum';
 import { DayOfWeek } from '../libs/enums/day-of-week.enum';
-import { MemberType } from '../libs/enums/member.enum';
+import { MemberStatus, MemberType } from '../libs/enums/member.enum';
 import { Gender } from '../libs/enums/gender.enum';
 
 const DoctorProfileSchema = new Schema(
@@ -11,6 +11,12 @@ const DoctorProfileSchema = new Schema(
       type: String,
       enum: MemberType,
       default: MemberType.DOCTOR,
+    },
+
+    memberStatus: {
+      type: String,
+      enum: MemberStatus,
+      default: MemberStatus.ACTIVE,
     },
 
     memberGender: {

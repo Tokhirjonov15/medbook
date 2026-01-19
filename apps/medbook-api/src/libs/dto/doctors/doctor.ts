@@ -1,7 +1,7 @@
 import { Field, ObjectType, Int, Float } from '@nestjs/graphql';
 import type { ObjectId } from 'mongoose';
 import { Gender } from '../../enums/gender.enum';
-import { MemberType } from '../../enums/member.enum';
+import { MemberStatus, MemberType } from '../../enums/member.enum';
 
 @ObjectType()
 export class Doctor {
@@ -10,6 +10,9 @@ export class Doctor {
 
   @Field(() => String)
   memberNick: string;
+
+  @Field(() => MemberStatus)
+  memberStatus: MemberStatus;
 
   @Field(() => String)
   memberFullName: string;
@@ -39,6 +42,9 @@ export class Doctor {
 
   @Field(() => Int)
   memberBlocks: number;
+
+  @Field(() => Int)
+  memberLikes: number;
 
   @Field(() => String)
   licenseNumber: string;

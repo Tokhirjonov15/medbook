@@ -11,6 +11,10 @@ import { DoctorUpdate } from '../../libs/dto/doctors/doctor.update';
 import { ViewInput } from '../../libs/dto/view/view.input';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { ViewService } from '../view/view.service';
+import { LikeInput } from '../../libs/dto/like/like.input';
+import { LikeGroup } from '../../libs/enums/like.enum';
+import { MemberStatus } from '../../libs/enums/member.enum';
+import { LikeService } from '../like/like.service';
 
 @Injectable()
 export class DoctorsService {
@@ -18,6 +22,7 @@ export class DoctorsService {
         @InjectModel('Doctor') private readonly doctorModel: Model<Doctor>,
         private authService: AuthService,
         private viewService: ViewService,
+        private likeService: LikeService,
     ) {}
 
     public async doctorSignup(input: DoctorSignupInput): Promise<Doctor> {
@@ -90,6 +95,59 @@ export class DoctorsService {
         return result;
     }
 
+    public async getDoctor(memberId: ObjectId, doctorId: ObjectId): Promise<Doctor> {
+        const search: T = {
+            _id: doctorId,
+        };
+
+        const targetDoctor = await this.doctorModel.findOne(search).lean().exec();
+        
+        if (!targetDoctor) {
+            throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+        }
+        if (memberId) {
+            const viewInput: ViewInput = {
+                memberId: memberId,
+                viewRefId: doctorId,
+                viewGroup: ViewGroup.DOCTOR
+            };
+            const newView = await this.viewService.recordView(viewInput);
+
+            if (newView) {
+                await this.doctorModel
+                    .findByIdAndUpdate(
+                        doctorId,
+                        { $inc: { doctorViews: 1 } },
+                        { new: true }
+                    )
+                    .exec();
+
+                targetDoctor.doctorViews++;
+            }
+        }
+
+        return targetDoctor;
+    }
+
+    public async likeTargetDoctor(memberId: ObjectId, likeRefId: ObjectId): Promise<Doctor> {
+        const target = await this.doctorModel
+            .findOne({ _id: likeRefId, memberStatus: MemberStatus.ACTIVE })
+            .exec();
+        if(!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+        const input: LikeInput = {
+            memberId: memberId,
+            likeRefId: likeRefId,
+            likeGroup: LikeGroup.DOCTOR
+        };
+
+        const modifier: number = await this.likeService.toggleLike(input);
+        const result = await this.doctorStatsEditor({ _id: likeRefId, targetKey: "memberLikes", modifier: modifier });
+
+        if(!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
+        return result;
+    }
+
     public async getAllDoctorsByAdmin(input: DoctorsInquiry): Promise<Doctors> {
         const { text } = input.search;
         const match: T = {};
@@ -142,55 +200,21 @@ export class DoctorsService {
         return result;
     }
 
-    public async getDoctor(memberId: ObjectId, doctorId: ObjectId): Promise<Doctor> {
-        const search: T = {
-            _id: doctorId,
-        };
-
-        const targetDoctor = await this.doctorModel.findOne(search).lean().exec();
-        
-        if (!targetDoctor) {
-            throw new InternalServerErrorException(Message.NO_DATA_FOUND);
-        }
-        if (memberId) {
-            const viewInput: ViewInput = {
-                memberId: memberId,
-                viewRefId: doctorId,
-                viewGroup: ViewGroup.DOCTOR
-            };
-            const newView = await this.viewService.recordView(viewInput);
-
-            if (newView) {
-                await this.doctorModel
-                    .findByIdAndUpdate(
-                        doctorId,
-                        { $inc: { doctorViews: 1 } },
-                        { new: true }
-                    )
-                    .exec();
-
-                targetDoctor.doctorViews++;
-            }
-        }
-
-        return targetDoctor;
-    }
-
     public async doctorStatsEditor(input: StatisticModifier): Promise<Doctor> {
-            const { _id, targetKey, modifier } = input;
-            const result = await this.doctorModel
-                .findByIdAndUpdate(
-                    _id, 
-                    {
-                        $inc: { [targetKey]: modifier }, 
-                    }, 
-                    { new: true }
-                )
-                .exec();
-            if (!result) {
-                throw new InternalServerErrorException(Message.UPDATE_FAILED);
-            }
-    
-            return result;
+        const { _id, targetKey, modifier } = input;
+        const result = await this.doctorModel
+            .findByIdAndUpdate(
+                _id, 
+                {
+                    $inc: { [targetKey]: modifier }, 
+                }, 
+                { new: true }
+            )
+            .exec();
+        if (!result) {
+            throw new InternalServerErrorException(Message.UPDATE_FAILED);
         }
+
+        return result;
+    }
 }

@@ -41,6 +41,30 @@ export class DoctorsResolver {
 		return await this.doctorsService.updateDoctor(memberId, input);
 	}
 
+	@UseGuards(WithoutGuard)
+	@Query(() => Doctor)
+	public async getDoctor(
+		@Args('doctorId') input: string,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<Doctor> {
+		console.log("Query: getDoctor");
+		const doctorId = shapeIntoMongoObjectId(input);
+		return await this.doctorsService.getDoctor(memberId, doctorId);
+    }
+
+	@UseGuards(AuthGuard)
+	@Mutation(() => Doctor)
+	public async likeTargetDoctor(
+		@Args('memberId') input: string, 
+		@AuthMember('_id') memberId: ObjectId
+	): Promise<Doctor> {
+		console.log("Mutation: likeTargetDoctor");
+		const likeRefId = shapeIntoMongoObjectId(input);
+		return await this.doctorsService.likeTargetDoctor(memberId, likeRefId);
+	}
+
+	/** ADMIN */
+
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
 	@Query(() => Doctors)
@@ -59,16 +83,5 @@ export class DoctorsResolver {
     ): Promise<Doctor> {
         console.log("Mutation: updateDoctorByAdmin");
         return await this.doctorsService.updateDoctorByAdmin(input);
-    }
-
-	@UseGuards(WithoutGuard)
-	@Query(() => Doctor)
-	public async getDoctor(
-		@Args('doctorId') input: string,
-		@AuthMember('_id') memberId: ObjectId,
-	): Promise<Doctor> {
-		console.log("Query: getDoctor");
-		const doctorId = shapeIntoMongoObjectId(input);
-		return await this.doctorsService.getDoctor(memberId, doctorId);
-}
+    }	
 }

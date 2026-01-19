@@ -7,6 +7,7 @@ import { DoctorsResolver } from './doctors.resolver';
 import { ViewModule } from "../view/view.module";
 import ViewSchema from "../../schemas/View.model";
 import MemberSchema from "../../schemas/Member.model";
+import { LikeModule } from "../like/like.module";
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import MemberSchema from "../../schemas/Member.model";
     ]), 
     AuthModule,
     ViewModule,
+    LikeModule,
   ],
   providers: [DoctorsService, DoctorsResolver],
   exports: [DoctorsService],
