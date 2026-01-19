@@ -9,43 +9,39 @@ import { ResetPasswordInput } from '../../libs/dto/auth/resetPassword';
 
 @Resolver()
 export class AuthResolver {
-    constructor(private readonly authService: AuthService) {}
- 
-    @Mutation(() => MessageResponse)
-    public async forgotPassword(
-        @Args('input') input: ForgotPasswordInput,
-    ): Promise<MessageResponse> {
-        console.log('Mutation: forgotPassword');
-        console.log('Input:', input);
+	constructor(private readonly authService: AuthService) {}
 
-        const isValid = await this.authService.verifyMemberCredentials(input);
+	@Mutation(() => MessageResponse)
+	public async forgotPassword(@Args('input') input: ForgotPasswordInput): Promise<MessageResponse> {
+		console.log('Mutation: forgotPassword');
+		console.log('Input:', input);
 
-        if (!isValid) {
-        throw new BadRequestException(Message.NO_DATA_FOUND);
-        }
+		const isValid = await this.authService.verifyMemberCredentials(input);
 
-        return {
-            message: 'Credentials verified. You can now reset your password.',
-            success: true,
-        };
-    }
+		if (!isValid) {
+			throw new BadRequestException(Message.NO_DATA_FOUND);
+		}
 
-    @Mutation(() => MessageResponse)
-    public async resetPassword(
-        @Args('input') input: ResetPasswordInput,
-    ): Promise<MessageResponse> {
-        console.log('Mutation: resetPassword');
-        console.log('Input:', { ...input, newPassword: '***' });
+		return {
+			message: 'Credentials verified. You can now reset your password.',
+			success: true,
+		};
+	}
 
-        const isReset = await this.authService.resetPassword(input);
+	@Mutation(() => MessageResponse)
+	public async resetPassword(@Args('input') input: ResetPasswordInput): Promise<MessageResponse> {
+		console.log('Mutation: resetPassword');
+		console.log('Input:', { ...input, newPassword: '***' });
 
-        if (!isReset) {
-        throw new BadRequestException(Message.UPDATE_FAILED);
-        }
+		const isReset = await this.authService.resetPassword(input);
 
-        return {
-            message: 'Password reset successfully. You can now login with your new password.',
-            success: true,
-        };
-    }
+		if (!isReset) {
+			throw new BadRequestException(Message.UPDATE_FAILED);
+		}
+
+		return {
+			message: 'Password reset successfully. You can now login with your new password.',
+			success: true,
+		};
+	}
 }

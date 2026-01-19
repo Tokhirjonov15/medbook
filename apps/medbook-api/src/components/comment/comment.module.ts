@@ -10,19 +10,19 @@ import { DoctorModule } from '../doctors/doctors.module';
 import { LikeModule } from '../like/like.module';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      {
-        name: "Comment",
-        schema: CommentSchema,
-      },
-    ]),
-    AuthModule,
-    MemberModule,
-    BoardArticleModule,
-    DoctorModule,
-    LikeModule,
-  ],
-  providers: [CommentResolver, CommentService],
+	imports: [
+		MongooseModule.forFeature([
+			{
+				name: 'Comment',
+				schema: CommentSchema,
+			},
+		]),
+		AuthModule,
+		MemberModule,
+		BoardArticleModule,
+		DoctorModule,
+		LikeModule,
+	],
+	providers: [CommentResolver, CommentService],
 })
 export class CommentModule {}

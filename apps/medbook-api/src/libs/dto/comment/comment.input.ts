@@ -22,7 +22,7 @@ export class CommentInput {
 
 	@IsOptional()
 	@Field(() => String, { nullable: true })
-    parentCommentId?: string;
+	parentCommentId?: string;
 
 	memberId?: ObjectId;
 }

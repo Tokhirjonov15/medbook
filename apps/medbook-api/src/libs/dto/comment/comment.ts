@@ -23,16 +23,16 @@ export class Comment {
 	commentRefId: ObjectId;
 
 	@Field(() => String, { nullable: true })
-    parentCommentId?: string;
-
-    @Field(() => Int)
-    commentReplies: number;
+	parentCommentId?: string;
 
 	@Field(() => Int)
-    commentLikes: number;
+	commentReplies: number;
+
+	@Field(() => Int)
+	commentLikes: number;
 
 	@Field(() => [Comment], { nullable: true })
-    replies?: Comment[];
+	replies?: Comment[];
 
 	@Field(() => String)
 	memberId: ObjectId;
@@ -45,8 +45,8 @@ export class Comment {
 
 	/** from aggregation **/
 
-	@Field(() => [MeLiked], {nullable: true})
-    meLiked?: MeLiked;
+	@Field(() => [MeLiked], { nullable: true })
+	meLiked?: MeLiked;
 
 	@Field(() => Member, { nullable: true })
 	memberData?: Member;

@@ -11,109 +11,109 @@ import { ResetPasswordInput } from '../../libs/dto/auth/resetPassword';
 
 @Injectable()
 export class AuthService {
-    constructor(
-        @InjectModel('Member') private readonly memberModel: Model<Member>,
-        @InjectModel('Doctor') private readonly doctorModel: Model<Doctor>,
-        private jwtService: JwtService
-    ) {}
+	constructor(
+		@InjectModel('Member') private readonly memberModel: Model<Member>,
+		@InjectModel('Doctor') private readonly doctorModel: Model<Doctor>,
+		private jwtService: JwtService,
+	) {}
 
-    public async hashPassword(password: string): Promise<string> {
-        const salt = await bcrypt.genSalt();
-        return await bcrypt.hash(password, salt);
-    }
+	public async hashPassword(password: string): Promise<string> {
+		const salt = await bcrypt.genSalt();
+		return await bcrypt.hash(password, salt);
+	}
 
-    public async comparePassword(password: string, hashedPassword: string): Promise<boolean> {
-        return await bcrypt.compare(password, hashedPassword);
-    }
+	public async comparePassword(password: string, hashedPassword: string): Promise<boolean> {
+		return await bcrypt.compare(password, hashedPassword);
+	}
 
-    public async createToken(user: any): Promise<string> {
-        console.log("user:", user);
-        const payload: T = {};
+	public async createToken(user: any): Promise<string> {
+		console.log('user:', user);
+		const payload: T = {};
 
-        Object.keys(user['_doc'] ? user['_doc'] : user).map((ele) => {
-            payload[`${ele}`] = user[`${ele}`];
-        });
-        delete payload.memberPassword;
-        
-        return await this.jwtService.signAsync(payload);
-    }
+		Object.keys(user['_doc'] ? user['_doc'] : user).map((ele) => {
+			payload[`${ele}`] = user[`${ele}`];
+		});
+		delete payload.memberPassword;
 
-    public async verifyToken<T = any>(token: string): Promise<T> {
-        const decoded = await this.jwtService.verifyAsync(token);
-        return decoded;
-    }
+		return await this.jwtService.signAsync(payload);
+	}
 
-    public async verifyMemberCredentials(input: ForgotPasswordInput): Promise<boolean> {
-        const { memberNick, memberPhone } = input;
-        const member = await this.doctorModel
-            .findOne({ 
-                memberNick: memberNick,
-                memberPhone: memberPhone 
-            })
-        .exec();
+	public async verifyToken<T = any>(token: string): Promise<T> {
+		const decoded = await this.jwtService.verifyAsync(token);
+		return decoded;
+	}
 
-        if (member) {
-            console.log('Member found:', memberNick);
-            return true;
-        }
+	public async verifyMemberCredentials(input: ForgotPasswordInput): Promise<boolean> {
+		const { memberNick, memberPhone } = input;
+		const member = await this.doctorModel
+			.findOne({
+				memberNick: memberNick,
+				memberPhone: memberPhone,
+			})
+			.exec();
 
-        const doctor = await this.memberModel
-            .findOne({ 
-                memberNick: memberNick,
-                memberPhone: memberPhone 
-            })
-        .exec();
+		if (member) {
+			console.log('Member found:', memberNick);
+			return true;
+		}
 
-        if (doctor) {
-            console.log('Doctor found:', memberNick);
-            return true;
-        }
+		const doctor = await this.memberModel
+			.findOne({
+				memberNick: memberNick,
+				memberPhone: memberPhone,
+			})
+			.exec();
 
-        console.log(' User not found or credentials mismatch');
-        return false;
-    }
+		if (doctor) {
+			console.log('Doctor found:', memberNick);
+			return true;
+		}
 
-    public async resetPassword(input: ResetPasswordInput): Promise<boolean> {
-        const { memberNick, memberPhone, newPassword } = input;
-        const hashedPassword = await this.hashPassword(newPassword);
+		console.log(' User not found or credentials mismatch');
+		return false;
+	}
 
-        const memberUpdate = await this.memberModel
-            .findOneAndUpdate(
-                { 
-                    memberNick: memberNick,
-                    memberPhone: memberPhone 
-                },
-                { 
-                    $set: { memberPassword: hashedPassword } 
-                },
-                { new: true }
-            )
-            .exec();
+	public async resetPassword(input: ResetPasswordInput): Promise<boolean> {
+		const { memberNick, memberPhone, newPassword } = input;
+		const hashedPassword = await this.hashPassword(newPassword);
 
-        if (memberUpdate) {
-            console.log('Member password updated:', memberNick);
-            return true;
-        }
+		const memberUpdate = await this.memberModel
+			.findOneAndUpdate(
+				{
+					memberNick: memberNick,
+					memberPhone: memberPhone,
+				},
+				{
+					$set: { memberPassword: hashedPassword },
+				},
+				{ new: true },
+			)
+			.exec();
 
-        const doctorUpdate = await this.doctorModel
-            .findOneAndUpdate(
-                { 
-                    memberNick: memberNick,
-                    memberPhone: memberPhone 
-                },
-                { 
-                    $set: { memberPassword: hashedPassword } 
-                },
-                { new: true }
-            )
-            .exec();
+		if (memberUpdate) {
+			console.log('Member password updated:', memberNick);
+			return true;
+		}
 
-        if (doctorUpdate) {
-            console.log('✅ Doctor password updated:', memberNick);
-            return true;
-        }
+		const doctorUpdate = await this.doctorModel
+			.findOneAndUpdate(
+				{
+					memberNick: memberNick,
+					memberPhone: memberPhone,
+				},
+				{
+					$set: { memberPassword: hashedPassword },
+				},
+				{ new: true },
+			)
+			.exec();
 
-        console.log('Password reset failed');
-        return false;
-    }
+		if (doctorUpdate) {
+			console.log('✅ Doctor password updated:', memberNick);
+			return true;
+		}
+
+		console.log('Password reset failed');
+		return false;
+	}
 }

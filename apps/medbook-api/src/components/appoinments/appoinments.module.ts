@@ -8,15 +8,15 @@ import { AuthModule } from '../auth/auth.module';
 import { DoctorModule } from '../doctors/doctors.module';
 
 @Module({
-  imports: [
-        MongooseModule.forFeature([
-            { name: 'Appointment', schema: AppointmentSchema },
-            { name: 'Doctor', schema: DoctorProfileSchema },
-        ]),
-        AuthModule,
-        DoctorModule,
-    ],
-    providers: [AppoinmentsService, AppoinmentsResolver],
-    exports: [AppoinmentsService],
+	imports: [
+		MongooseModule.forFeature([
+			{ name: 'Appointment', schema: AppointmentSchema },
+			{ name: 'Doctor', schema: DoctorProfileSchema },
+		]),
+		AuthModule,
+		DoctorModule,
+	],
+	providers: [AppoinmentsService, AppoinmentsResolver],
+	exports: [AppoinmentsService],
 })
 export class AppoinmentsModule {}

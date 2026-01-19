@@ -13,21 +13,25 @@ import { PaymentModule } from './payment/payment.module';
 import { BoardArticleModule } from './board-article/board-article.module';
 import { CommentModule } from './comment/comment.module';
 import { LikeModule } from './like/like.module';
+import { FollowModule } from './follow/follow.module';
 
 @Module({
-  imports: [
-    MemberModule,
-    DoctorModule,
-    AppoinmentsModule, 
-    PrescriptionsModule, 
-    MedicalRecordsModule, 
-    ReviewsModule, 
-    NotificationsModule, 
-    ChatModule, 
-    AuthModule, 
-    ViewModule, 
-    PaymentModule, 
-    BoardArticleModule, CommentModule, LikeModule,
-  ],
+	imports: [
+		MemberModule,
+		DoctorModule,
+		AppoinmentsModule,
+		PrescriptionsModule,
+		MedicalRecordsModule,
+		ReviewsModule,
+		NotificationsModule,
+		ChatModule,
+		AuthModule,
+		ViewModule,
+		PaymentModule,
+		BoardArticleModule,
+		CommentModule,
+		LikeModule,
+		FollowModule,
+	],
 })
 export class ComponentsModule {}

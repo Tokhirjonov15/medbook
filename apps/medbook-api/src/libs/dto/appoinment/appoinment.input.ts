@@ -8,128 +8,127 @@ import { availableAppointmentSorts } from '../../config';
 
 @InputType()
 export class TimeSlotInput {
-    @IsNotEmpty()
-    @Field(() => String)
-    start: string;
+	@IsNotEmpty()
+	@Field(() => String)
+	start: string;
 
-    @IsNotEmpty()
-    @Field(() => String)
-    end: string;
+	@IsNotEmpty()
+	@Field(() => String)
+	end: string;
 }
 
 @InputType()
 export class BookAppointmentInput {
-    @IsNotEmpty()
-    @Field(() => String)
-    doctor: ObjectId;
+	@IsNotEmpty()
+	@Field(() => String)
+	doctor: ObjectId;
 
-    @IsNotEmpty()
-    @IsDate()
-    @Field(() => Date)
-    appointmentDate: Date;
+	@IsNotEmpty()
+	@IsDate()
+	@Field(() => Date)
+	appointmentDate: Date;
 
-    @IsNotEmpty()
-    @Field(() => TimeSlotInput)
-    timeSlot: TimeSlotInput;
+	@IsNotEmpty()
+	@Field(() => TimeSlotInput)
+	timeSlot: TimeSlotInput;
 
-    @IsNotEmpty()
-    @IsEnum(ConsultationType)
-    @Field(() => ConsultationType)
-    consultationType: ConsultationType;
+	@IsNotEmpty()
+	@IsEnum(ConsultationType)
+	@Field(() => ConsultationType)
+	consultationType: ConsultationType;
 
-    @IsNotEmpty()
-    @IsString()
-    @Field(() => String)
-    reason: string;
+	@IsNotEmpty()
+	@IsString()
+	@Field(() => String)
+	reason: string;
 
-    @IsOptional()
-    @IsArray()
-    @Field(() => [String], { nullable: true })
-    symptoms?: string[];
+	@IsOptional()
+	@IsArray()
+	@Field(() => [String], { nullable: true })
+	symptoms?: string[];
 
-    @IsOptional()
-    @Field(() => String, { nullable: true })
-    notes?: string;
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	notes?: string;
 }
 
 @InputType()
 export class AppointmentsInquirySearch {
-    @IsOptional()
-    @Field(() => String, { nullable: true })
-    doctorId?: ObjectId;
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	doctorId?: ObjectId;
 
-    @IsOptional()
-    @Field(() => String, { nullable: true })
-    patientId?: ObjectId;
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	patientId?: ObjectId;
 
-    @IsOptional()
-    @Field(() => AppointmentStatus, { nullable: true })
-    status?: AppointmentStatus;
+	@IsOptional()
+	@Field(() => AppointmentStatus, { nullable: true })
+	status?: AppointmentStatus;
 
-    @IsOptional()
-    @Field(() => Date, { nullable: true })
-    dateFrom?: Date;
+	@IsOptional()
+	@Field(() => Date, { nullable: true })
+	dateFrom?: Date;
 
-    @IsOptional()
-    @Field(() => Date, { nullable: true })
-    dateTo?: Date;
+	@IsOptional()
+	@Field(() => Date, { nullable: true })
+	dateTo?: Date;
 }
 
 @InputType()
 export class AppointmentsInquiry {
-    @IsNotEmpty()
-    @Min(1)
-    @Field(() => Int)
-    page: number;
+	@IsNotEmpty()
+	@Min(1)
+	@Field(() => Int)
+	page: number;
 
-    @IsNotEmpty()
-    @Min(1)
-    @Field(() => Int)
-    limit: number;
+	@IsNotEmpty()
+	@Min(1)
+	@Field(() => Int)
+	limit: number;
 
-    @IsOptional()
-    @Field(() => String, { nullable: true })
-    sort?: string;
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	sort?: string;
 
-    @IsOptional()
-    @Field(() => Direction, { nullable: true })
-    direction?: Direction;
+	@IsOptional()
+	@Field(() => Direction, { nullable: true })
+	direction?: Direction;
 
-    @IsOptional()
-    @Field(() => AppointmentsInquirySearch, { nullable: true })
-    search?: AppointmentsInquirySearch;
+	@IsOptional()
+	@Field(() => AppointmentsInquirySearch, { nullable: true })
+	search?: AppointmentsInquirySearch;
 }
 
 @InputType()
 class AAISearch {
-    @IsOptional()
-    @Field(() => AppointmentStatus, {nullable: true})
-    appointmentStatus?: AppointmentStatus;   
+	@IsOptional()
+	@Field(() => AppointmentStatus, { nullable: true })
+	appointmentStatus?: AppointmentStatus;
 }
 
 @InputType()
 export class AllAppointmentsInquiry {
-    @IsNotEmpty()
-    @Min(1)
-    @Field(() => Int)
-    page: number;
+	@IsNotEmpty()
+	@Min(1)
+	@Field(() => Int)
+	page: number;
 
-    @IsNotEmpty()
-    @Min(1)
-    @Field(() => Int)
-    limit: number;
+	@IsNotEmpty()
+	@Min(1)
+	@Field(() => Int)
+	limit: number;
 
-    @IsOptional()
-    @IsIn(availableAppointmentSorts)
-    @Field(() => String, { nullable: true })
-    sort?: string;
+	@IsOptional()
+	@IsIn(availableAppointmentSorts)
+	@Field(() => String, { nullable: true })
+	sort?: string;
 
-    @IsOptional()
-    @Field(() => Direction, { nullable: true })
-    direction?: Direction;
+	@IsOptional()
+	@Field(() => Direction, { nullable: true })
+	direction?: Direction;
 
-    @IsOptional()
-    @Field(() => AAISearch)
-    search?: AAISearch;
+	@IsOptional()
+	@Field(() => AAISearch)
+	search?: AAISearch;
 }
-

@@ -6,88 +6,88 @@ import { Specialization } from '../../enums/specialization.enum';
 
 @InputType()
 export class DoctorUpdate {
-    @Field(() => String)
-    _id?: ObjectId;
+	@Field(() => String)
+	_id?: ObjectId;
 
-    @IsOptional()
-    @Length(3, 15)
-    @Field(() => String, { nullable: true })
-    memberNick?: string;
+	@IsOptional()
+	@Length(3, 15)
+	@Field(() => String, { nullable: true })
+	memberNick?: string;
 
-    @IsOptional()
-    @Length(5, 12)
-    @Field(() => String, { nullable: true })
-    memberPassword?: string;
-    
-    @IsOptional()
-    @Length(4, 100)
-    @Field(() => String, { nullable: true })
-    memberFullName?: string;
+	@IsOptional()
+	@Length(5, 12)
+	@Field(() => String, { nullable: true })
+	memberPassword?: string;
 
-    @IsOptional()
-    @Field(() => String, { nullable: true })
-    memberPhone?: string;
+	@IsOptional()
+	@Length(4, 100)
+	@Field(() => String, { nullable: true })
+	memberFullName?: string;
 
-    @IsOptional()
-    @Field(() => String, { nullable: true })
-    memberImage?: string;
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	memberPhone?: string;
 
-    @IsOptional()
-    @Field(() => String, { nullable: true })
-    memberDesc?: string;
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	memberImage?: string;
 
-    @IsOptional()
-    @Field(() => Gender, { nullable: true })
-    memberGender?: Gender;
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	memberDesc?: string;
 
-    @IsOptional()
-    @Field(() => String, { nullable: true })
-    licenseNumber?: string;
+	@IsOptional()
+	@Field(() => Gender, { nullable: true })
+	memberGender?: Gender;
 
-    @IsOptional()
-    @Field(() => Specialization, { nullable: true })
-    specialization?: Specialization;
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	licenseNumber?: string;
 
-    @IsOptional()
-    @Min(0)
-    @Field(() => Int, { nullable: true })
-    experience?: number;
+	@IsOptional()
+	@Field(() => Specialization, { nullable: true })
+	specialization?: Specialization;
 
-    @IsOptional()
-    @Field(() => Float, { nullable: true })
-    consultationFee?: number;
+	@IsOptional()
+	@Min(0)
+	@Field(() => Int, { nullable: true })
+	experience?: number;
 
-    @IsOptional()
-    @IsArray()
-    @Field(() => [String], { nullable: true })
-    languages?: string[];
+	@IsOptional()
+	@Field(() => Float, { nullable: true })
+	consultationFee?: number;
 
-    @IsOptional()
-    @Field(() => String, { nullable: true })
-    consultationType?: string;
+	@IsOptional()
+	@IsArray()
+	@Field(() => [String], { nullable: true })
+	languages?: string[];
 
-    @IsOptional()
-    @Field(() => [String], { nullable: true })
-    workingDays?: string[];
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	consultationType?: string;
 
-    @IsOptional()
-    @Field(() => [String], { nullable: true })
-    workingHours?: string[];
+	@IsOptional()
+	@Field(() => [String], { nullable: true })
+	workingDays?: string[];
 
-    @IsOptional()
-    @Field(() => [String], { nullable: true })
-    breakTime?: string[];
+	@IsOptional()
+	@Field(() => [String], { nullable: true })
+	workingHours?: string[];
 
-    @IsOptional()
-    @Field(() => String, { nullable: true })
-    clinicAddress?: string;
+	@IsOptional()
+	@Field(() => [String], { nullable: true })
+	breakTime?: string[];
 
-    @IsOptional()
-    @Field(() => String, { nullable: true })
-    clinicName?: string;
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	clinicAddress?: string;
 
-    @IsOptional()
-    @IsArray()
-    @Field(() => [String], { nullable: true })
-    awards?: string[];
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	clinicName?: string;
+
+	@IsOptional()
+	@IsArray()
+	@Field(() => [String], { nullable: true })
+	awards?: string[];
 }

@@ -1,139 +1,139 @@
 import { Schema } from 'mongoose';
-import { MemberStatus, MemberType} from '../libs/enums/member.enum';
+import { MemberStatus, MemberType } from '../libs/enums/member.enum';
 import { Gender } from '../libs/enums/gender.enum';
 
 const MemberSchema = new Schema(
-  {
-    memberNick: {
-      type: String,
-      index: { unique:true, sparse: true },
-      required: true,
-    },
+	{
+		memberNick: {
+			type: String,
+			index: { unique: true, sparse: true },
+			required: true,
+		},
 
-    memberStatus: {
-      type: String,
-      enum: MemberStatus,
-      default: MemberStatus.ACTIVE,
-    },
+		memberStatus: {
+			type: String,
+			enum: MemberStatus,
+			default: MemberStatus.ACTIVE,
+		},
 
-    memberPassword: {
-      type: String,
-      required: true,
-      select: false,
-    },
+		memberPassword: {
+			type: String,
+			required: true,
+			select: false,
+		},
 
-    memberType: {
-      type: String,
-      enum: MemberType,
-      default: MemberType.PATIENT,
-    },
+		memberType: {
+			type: String,
+			enum: MemberType,
+			default: MemberType.PATIENT,
+		},
 
-    memberPhone: {
-      type: String,
-      index: { unique:true, sparse: true },
-      required: true,
-    },
+		memberPhone: {
+			type: String,
+			index: { unique: true, sparse: true },
+			required: true,
+		},
 
-    memberImage: {
-      type: String,
-      default: '',
-    },
+		memberImage: {
+			type: String,
+			default: '',
+		},
 
-    memberGender: {
-      type: String,
-      enum: Gender,
-    },
+		memberGender: {
+			type: String,
+			enum: Gender,
+		},
 
-    memberArticles: {
-        type: Number,
-        default: 0,
-    },
+		memberArticles: {
+			type: Number,
+			default: 0,
+		},
 
-    memberFollowers: {
-        type: Number,
-        default: 0,
-    },
+		memberFollowers: {
+			type: Number,
+			default: 0,
+		},
 
-    memberFollowings: {
-        type: Number,
-        default: 0,
-    },
+		memberFollowings: {
+			type: Number,
+			default: 0,
+		},
 
-    memberLikes: {
-        type: Number,
-        default: 0,
-    },
+		memberLikes: {
+			type: Number,
+			default: 0,
+		},
 
-    memberComments: {
-        type: Number,
-        default: 0,
-    },
+		memberComments: {
+			type: Number,
+			default: 0,
+		},
 
-    memberWarnings: {
-        type: Number,
-        default: 0,
-    },
+		memberWarnings: {
+			type: Number,
+			default: 0,
+		},
 
-    memberBlocks: {
-        type: Number,
-        default: 0,
-    },
+		memberBlocks: {
+			type: Number,
+			default: 0,
+		},
 
-    memberAddress: {
-      street: String,
-      city: String,
-      state: String,
-      country: String,
-      zipCode: String,
-      coordinates: {
-        lat: Number,
-        lng: Number,
-      },
-    },
+		memberAddress: {
+			street: String,
+			city: String,
+			state: String,
+			country: String,
+			zipCode: String,
+			coordinates: {
+				lat: Number,
+				lng: Number,
+			},
+		},
 
-    isActive: {
-      type: Boolean,
-      default: true,
-      index: true,
-    },
+		isActive: {
+			type: Boolean,
+			default: true,
+			index: true,
+		},
 
-    lastLogin: {
-      type: Date,
-    },
+		lastLogin: {
+			type: Date,
+		},
 
-    // Patient-specific fields
-    bloodGroup: {
-      type: String,
-    },
+		// Patient-specific fields
+		bloodGroup: {
+			type: String,
+		},
 
-    allergies: {
-      type: [String],
-      default: [],
-    },
+		allergies: {
+			type: [String],
+			default: [],
+		},
 
-    chronicDiseases: {
-      type: [String],
-      default: [],
-    },
+		chronicDiseases: {
+			type: [String],
+			default: [],
+		},
 
-    emergencyContact: {
-      name: String,
-      relationship: String,
-      phone: String,
-    },
+		emergencyContact: {
+			name: String,
+			relationship: String,
+			phone: String,
+		},
 
-    // Doctor reference
-    doctorProfile: {
-      type: Schema.Types.ObjectId,
-      ref: 'DoctorProfileSchema',
-    },
-  },
-  {
-    timestamps: true,
-    collection: 'members',
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
-  }
+		// Doctor reference
+		doctorProfile: {
+			type: Schema.Types.ObjectId,
+			ref: 'DoctorProfileSchema',
+		},
+	},
+	{
+		timestamps: true,
+		collection: 'members',
+		toJSON: { virtuals: true },
+		toObject: { virtuals: true },
+	},
 );
 
 export default MemberSchema;

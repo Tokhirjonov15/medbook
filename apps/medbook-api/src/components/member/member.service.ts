@@ -89,7 +89,7 @@ export class MemberService {
 		if (!targetMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
 		//meLiked
-		const likeInput = {memberId: memberId, likeRefId: targetId, likeGroup: LikeGroup.MEMBER};
+		const likeInput = { memberId: memberId, likeRefId: targetId, likeGroup: LikeGroup.MEMBER };
 		//@ts-ignore
 		targetMember.meLiked = await this.likeService.checkLikeExistence(likeInput);
 
@@ -98,20 +98,20 @@ export class MemberService {
 
 	public async getDoctors(memberId: ObjectId, input: DoctorsInquiry): Promise<Doctors> {
 		const { text } = input.search;
-		const match: T = {}; 
+		const match: T = {};
 		const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
 
 		this.shapeMatchQuery(match, input);
-        console.log("match:", match);
+		console.log('match:', match);
 
 		if (text) {
 			match.$or = [
 				{ memberNick: { $regex: new RegExp(text, 'i') } },
 				{ memberFullName: { $regex: new RegExp(text, 'i') } },
-				{ 'specializations': { $regex: new RegExp(text, 'i') } }
+				{ specializations: { $regex: new RegExp(text, 'i') } },
 			];
 		}
-		
+
 		console.log('match:', match);
 
 		const result = await this.doctorModel
@@ -120,16 +120,13 @@ export class MemberService {
 				{ $sort: sort },
 				{
 					$facet: {
-						list: [
-							{ $skip: (input.page - 1) * input.limit }, 
-							{ $limit: input.limit }
-						],
+						list: [{ $skip: (input.page - 1) * input.limit }, { $limit: input.limit }],
 						metaCounter: [{ $count: 'total' }],
 					},
 				},
 			])
 			.exec();
-		
+
 		console.log('result:', result);
 		if (!result.length || !result[0].list.length) {
 			throw new InternalServerErrorException(Message.NO_DATA_FOUND);
@@ -140,78 +137,65 @@ export class MemberService {
 
 	public async likeTargetMember(memberId: ObjectId, likeRefId: ObjectId): Promise<Member> {
 		const target = await this.memberModel.findOne({ _id: likeRefId, memberStatus: MemberStatus.ACTIVE }).exec();
-		if(!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+		if (!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
 		const input: LikeInput = {
 			memberId: memberId,
 			likeRefId: likeRefId,
-			likeGroup: LikeGroup.MEMBER
+			likeGroup: LikeGroup.MEMBER,
 		};
 
 		const modifier: number = await this.likeService.toggleLike(input);
-		const result = await this.memberStatsEditor({ _id: likeRefId, targetKey: "memberLikes", modifier: modifier });
+		const result = await this.memberStatsEditor({ _id: likeRefId, targetKey: 'memberLikes', modifier: modifier });
 
-		if(!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
+		if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
 		return result;
 	}
 
 	private shapeMatchQuery(match: T, input: DoctorsInquiry): void {
-        const {
-            memberId,
-            specializationList,
-            consultationTypeList,
-            pricesRange,
-            text,
-        } = input.search;
-        if(memberId) match.memberId = shapeIntoMongoObjectId(memberId);
-        if (specializationList) {
+		const { memberId, specializationList, consultationTypeList, pricesRange, text } = input.search;
+		if (memberId) match.memberId = shapeIntoMongoObjectId(memberId);
+		if (specializationList) {
 			match.specialization = {
-				$in: Array.isArray(specializationList)
-					? specializationList
-					: [specializationList],
+				$in: Array.isArray(specializationList) ? specializationList : [specializationList],
 			};
-		};
-        if(consultationTypeList) match.consultationType = { $in: consultationTypeList };
+		}
+		if (consultationTypeList) match.consultationType = { $in: consultationTypeList };
 
-        if(pricesRange) match.consultationFee = { $gte: pricesRange.start, $lte: pricesRange.end };
-        if(text) match.memberNick = { $regex: new RegExp(text, 'i')};
-    }
+		if (pricesRange) match.consultationFee = { $gte: pricesRange.start, $lte: pricesRange.end };
+		if (text) match.memberNick = { $regex: new RegExp(text, 'i') };
+	}
 
 	public async getAllMembersByAdmin(input: MembersInquiry): Promise<Members> {
 		const { memberType, text } = input.search;
 		const match: T = {};
-		const sort: T = {[input?.sort ?? "createdAt"]: input?.direction ?? Direction.DESC };
+		const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
 
-		if(memberType) match.memberType = memberType;
-		if(text) match.memberNick = {$regex: new RegExp(text, "i")};
-		console.log("match:", match);
-		
-		const result = await this.memberModel.aggregate([
-			{$match: match},
-			{$sort: sort},
-			{
-				$facet: {
-					list: [{$skip: (input.page - 1) * input.limit }, { $limit: input.limit }],
-					metaCounter: [{$count: "total"}],
+		if (memberType) match.memberType = memberType;
+		if (text) match.memberNick = { $regex: new RegExp(text, 'i') };
+		console.log('match:', match);
+
+		const result = await this.memberModel
+			.aggregate([
+				{ $match: match },
+				{ $sort: sort },
+				{
+					$facet: {
+						list: [{ $skip: (input.page - 1) * input.limit }, { $limit: input.limit }],
+						metaCounter: [{ $count: 'total' }],
+					},
 				},
-			},
-		])
-		.exec();
-		console.log("result:", result);
-		if(!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+			])
+			.exec();
+		console.log('result:', result);
+		if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
 		return result[0];
 	}
 
 	public async updateMemberByAdmin(input: MemberUpdate): Promise<Member> {
-		const result = await this.memberModel
-		  .findByIdAndUpdate(
-			{_id: input._id},
-			input,
-			{new: true}
-		  )
-		  .exec();
-		if(!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
+		const result = await this.memberModel.findByIdAndUpdate({ _id: input._id }, input, { new: true }).exec();
+		if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
 		return result;
 	}
 
@@ -219,11 +203,11 @@ export class MemberService {
 		const { _id, targetKey, modifier } = input;
 		const result = await this.memberModel
 			.findByIdAndUpdate(
-				_id, 
+				_id,
 				{
-					$inc: { [targetKey]: modifier }, 
-				}, 
-				{ new: true }
+					$inc: { [targetKey]: modifier },
+				},
+				{ new: true },
 			)
 			.exec();
 		if (!result) {

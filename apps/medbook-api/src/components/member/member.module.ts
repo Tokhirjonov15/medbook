@@ -11,18 +11,18 @@ import ViewSchema from '../../schemas/View.model';
 import { LikeModule } from '../like/like.module';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      {name: "Member", schema: MemberSchema},
-      { name: 'Doctor', schema: DoctorProfileSchema },
-      { name: 'View', schema: ViewSchema },
-    ]),
-    AuthModule,
-    DoctorModule,
-    ViewModule,
-    LikeModule,
-  ],
-  providers: [MemberService, MemberResolver],
-  exports: [MemberService],
+	imports: [
+		MongooseModule.forFeature([
+			{ name: 'Member', schema: MemberSchema },
+			{ name: 'Doctor', schema: DoctorProfileSchema },
+			{ name: 'View', schema: ViewSchema },
+		]),
+		AuthModule,
+		DoctorModule,
+		ViewModule,
+		LikeModule,
+	],
+	providers: [MemberService, MemberResolver],
+	exports: [MemberService],
 })
 export class MemberModule {}

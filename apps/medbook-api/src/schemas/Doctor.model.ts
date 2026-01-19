@@ -6,167 +6,167 @@ import { MemberStatus, MemberType } from '../libs/enums/member.enum';
 import { Gender } from '../libs/enums/gender.enum';
 
 const DoctorProfileSchema = new Schema(
-  {
-    memberType: {
-      type: String,
-      enum: MemberType,
-      default: MemberType.DOCTOR,
-    },
+	{
+		memberType: {
+			type: String,
+			enum: MemberType,
+			default: MemberType.DOCTOR,
+		},
 
-    memberStatus: {
-      type: String,
-      enum: MemberStatus,
-      default: MemberStatus.ACTIVE,
-    },
+		memberStatus: {
+			type: String,
+			enum: MemberStatus,
+			default: MemberStatus.ACTIVE,
+		},
 
-    memberGender: {
-      type: String,
-      enum: Gender,
-    },
+		memberGender: {
+			type: String,
+			enum: Gender,
+		},
 
-    memberNick: {
-      type: String,
-      ref: 'members',
-      required: true,
-    },
+		memberNick: {
+			type: String,
+			ref: 'members',
+			required: true,
+		},
 
-    memberPhone: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    
-    memberPassword: {
-        type: String,
-        select: false,
-        required: true,
-    },
+		memberPhone: {
+			type: String,
+			required: true,
+			unique: true,
+		},
 
-    memberFullName: {
-        type: String,
-    },
+		memberPassword: {
+			type: String,
+			select: false,
+			required: true,
+		},
 
-    memberDesc: {
-        type: String,
-        default: "",
-    },
+		memberFullName: {
+			type: String,
+		},
 
-    memberImage: {
-        type: String,
-        default: '',
-    },
+		memberDesc: {
+			type: String,
+			default: '',
+		},
 
-    totalPatients: {
-      type: Number,
-      default: 0,
-    },
+		memberImage: {
+			type: String,
+			default: '',
+		},
 
-    memberArticles: {
-        type: Number,
-        default: 0,
-    },
+		totalPatients: {
+			type: Number,
+			default: 0,
+		},
 
-    memberFollowers: {
-        type: Number,
-        default: 0,
-    },
+		memberArticles: {
+			type: Number,
+			default: 0,
+		},
 
-    memberFollowings: {
-        type: Number,
-        default: 0,
-    },
+		memberFollowers: {
+			type: Number,
+			default: 0,
+		},
 
-    memberLikes: {
-        type: Number,
-        default: 0,
-    },
+		memberFollowings: {
+			type: Number,
+			default: 0,
+		},
 
-    memberComments: {
-        type: Number,
-        default: 0,
-    },
+		memberLikes: {
+			type: Number,
+			default: 0,
+		},
 
-    memberWarnings: {
-        type: Number,
-        default: 0,
-    },
+		memberComments: {
+			type: Number,
+			default: 0,
+		},
 
-    memberBlocks: {
-        type: Number,
-        default: 0,
-    },
+		memberWarnings: {
+			type: Number,
+			default: 0,
+		},
 
-    licenseNumber: {
-      type: String,
-      required: true,
-      unique: true,
-    },
+		memberBlocks: {
+			type: Number,
+			default: 0,
+		},
 
-    specialization: {
-      type: String,
-      enum: Specialization,
-      required: true,
-    },
+		licenseNumber: {
+			type: String,
+			required: true,
+			unique: true,
+		},
 
-    experience: {
-      type: Number,
-    },
+		specialization: {
+			type: String,
+			enum: Specialization,
+			required: true,
+		},
 
-    languages: {
-      type: [String],
-      default: [],
-    },
+		experience: {
+			type: Number,
+		},
 
-    clinicAddress: {
-      type: String,
-    },
+		languages: {
+			type: [String],
+			default: [],
+		},
 
-    clinicName: {
-      type: String,
-    },
+		clinicAddress: {
+			type: String,
+		},
 
-    consultationFee: {
-      type: Number,
-    },
+		clinicName: {
+			type: String,
+		},
 
-    consultationType: {
-      type: String,
-      enum: ConsultationType,
-      default: ConsultationType.BOTH,
-    },
+		consultationFee: {
+			type: Number,
+		},
 
-    workingDays: {
-      type: [String],
-      enum: DayOfWeek,
-    },
+		consultationType: {
+			type: String,
+			enum: ConsultationType,
+			default: ConsultationType.BOTH,
+		},
 
-    workingHours: {
-      type: [String],
-    },
+		workingDays: {
+			type: [String],
+			enum: DayOfWeek,
+		},
 
-    breakTime: {
-      type: [String],
-    },
+		workingHours: {
+			type: [String],
+		},
 
-    doctorViews: {
-      type: Number,
-      default: 0,
-    },
+		breakTime: {
+			type: [String],
+		},
 
-    reviewCount: {
-      type: Number,
-      default: 0,
-    },
+		doctorViews: {
+			type: Number,
+			default: 0,
+		},
 
-    awards: {
-      type: [String],
-      default: [],
-    },
-  },
-  {
-    timestamps: true,
-    collection: 'doctor',
-  }
+		reviewCount: {
+			type: Number,
+			default: 0,
+		},
+
+		awards: {
+			type: [String],
+			default: [],
+		},
+	},
+	{
+		timestamps: true,
+		collection: 'doctor',
+	},
 );
 
 export default DoctorProfileSchema;

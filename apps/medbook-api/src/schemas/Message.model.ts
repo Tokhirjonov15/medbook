@@ -2,65 +2,65 @@ import { Schema } from 'mongoose';
 import { MessageType } from '../libs/enums/message.enum';
 
 const ChatMessageSchema = new Schema(
-  {
-    appointment: {
-      type: Schema.Types.ObjectId,
-      ref: 'Appointment',
-      required: true,
-      index: true,
-    },
+	{
+		appointment: {
+			type: Schema.Types.ObjectId,
+			ref: 'Appointment',
+			required: true,
+			index: true,
+		},
 
-    sender: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-      index: true,
-    },
+		sender: {
+			type: Schema.Types.ObjectId,
+			ref: 'User',
+			required: true,
+			index: true,
+		},
 
-    receiver: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-      index: true,
-    },
+		receiver: {
+			type: Schema.Types.ObjectId,
+			ref: 'User',
+			required: true,
+			index: true,
+		},
 
-    message: {
-      type: String,
-      required: true,
-    },
+		message: {
+			type: String,
+			required: true,
+		},
 
-    type: {
-      type: String,
-      enum: MessageType,
-      default: MessageType.TEXT,
-    },
+		type: {
+			type: String,
+			enum: MessageType,
+			default: MessageType.TEXT,
+		},
 
-    fileUrl: {
-      type: String,
-    },
+		fileUrl: {
+			type: String,
+		},
 
-    fileName: {
-      type: String,
-    },
+		fileName: {
+			type: String,
+		},
 
-    fileSize: {
-      type: Number,
-    },
+		fileSize: {
+			type: Number,
+		},
 
-    isRead: {
-      type: Boolean,
-      default: false,
-      index: true,
-    },
+		isRead: {
+			type: Boolean,
+			default: false,
+			index: true,
+		},
 
-    readAt: {
-      type: Date,
-    },
-  },
-  {
-    timestamps: true,
-    collection: 'messages',
-  }
+		readAt: {
+			type: Date,
+		},
+	},
+	{
+		timestamps: true,
+		collection: 'messages',
+	},
 );
 
 // Indexes

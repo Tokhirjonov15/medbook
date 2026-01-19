@@ -3,10 +3,10 @@ import { MedbookBatchService } from './medbook-batch.service';
 
 @Controller()
 export class MedbookBatchController {
-  constructor(private readonly medbookBatchService: MedbookBatchService) {}
+	constructor(private readonly medbookBatchService: MedbookBatchService) {}
 
-  @Get()
-  getHello(): string {
-    return this.medbookBatchService.getHello();
-  }
+	@Get()
+	getHello(): string {
+		return this.medbookBatchService.getHello();
+	}
 }

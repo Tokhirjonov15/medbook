@@ -6,85 +6,85 @@ import { Direction } from '../../enums/common.enum';
 
 @InputType()
 export class CreatePaymentInput {
-  @IsNotEmpty()
-  @Field(() => String)
-  appointmentId: ObjectId;
+	@IsNotEmpty()
+	@Field(() => String)
+	appointmentId: ObjectId;
 
-  @IsEnum(PaymentMethod)
-  @Field(() => PaymentMethod)
-  paymentMethod: PaymentMethod;
+	@IsEnum(PaymentMethod)
+	@Field(() => PaymentMethod)
+	paymentMethod: PaymentMethod;
 }
 
 @InputType()
 export class RequestRefundInput {
-  @IsNotEmpty()
-  @Field(() => String)
-  paymentId: ObjectId;
+	@IsNotEmpty()
+	@Field(() => String)
+	paymentId: ObjectId;
 
-  @IsNotEmpty()
-  @IsString()
-  @Field(() => String)
-  reason: string;
+	@IsNotEmpty()
+	@IsString()
+	@Field(() => String)
+	reason: string;
 }
 
 @InputType()
 export class RefundByAdminInput {
-  @IsNotEmpty()
-  @Field(() => String)
-  paymentId: ObjectId;
+	@IsNotEmpty()
+	@Field(() => String)
+	paymentId: ObjectId;
 
-  @IsNotEmpty()
-  @IsString()
-  @Field(() => String)
-  adminNote: string;
+	@IsNotEmpty()
+	@IsString()
+	@Field(() => String)
+	adminNote: string;
 }
 
 @InputType()
 export class PaymentFilter {
-  @IsOptional()
-  @IsEnum(PaymentStatus)
-  @Field(() => PaymentStatus, { nullable: true })
-  status?: PaymentStatus;
+	@IsOptional()
+	@IsEnum(PaymentStatus)
+	@Field(() => PaymentStatus, { nullable: true })
+	status?: PaymentStatus;
 
-  @IsOptional()
-  @Field(() => String, { nullable: true })
-  patientId?: ObjectId;
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	patientId?: ObjectId;
 
-  @IsOptional()
-  @Field(() => String, { nullable: true })
-  doctorId?: ObjectId;
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	doctorId?: ObjectId;
 
-  @IsOptional()
-  @Field(() => Date, { nullable: true })
-  startDate?: Date;
+	@IsOptional()
+	@Field(() => Date, { nullable: true })
+	startDate?: Date;
 
-  @IsOptional()
-  @Field(() => Date, { nullable: true })
-  endDate?: Date;
+	@IsOptional()
+	@Field(() => Date, { nullable: true })
+	endDate?: Date;
 }
 
 @InputType()
 export class PaymentsInquiry {
-  @IsNumber()
-  @Min(1)
-  @Field(() => Number)
-  page: number;
+	@IsNumber()
+	@Min(1)
+	@Field(() => Number)
+	page: number;
 
-  @IsNumber()
-  @Min(1)
-  @Field(() => Number)
-  limit: number;
+	@IsNumber()
+	@Min(1)
+	@Field(() => Number)
+	limit: number;
 
-  @IsOptional()
-  @Field(() => String, { nullable: true, defaultValue: 'createdAt' })
-  sort?: string;
+	@IsOptional()
+	@Field(() => String, { nullable: true, defaultValue: 'createdAt' })
+	sort?: string;
 
-  @IsOptional()
-  @IsEnum(Direction)
-  @Field(() => Direction, { nullable: true, defaultValue: Direction.DESC })
-  direction?: Direction;
+	@IsOptional()
+	@IsEnum(Direction)
+	@Field(() => Direction, { nullable: true, defaultValue: Direction.DESC })
+	direction?: Direction;
 
-  @IsOptional()
-  @Field(() => PaymentFilter, { nullable: true })
-  filter?: PaymentFilter;
+	@IsOptional()
+	@Field(() => PaymentFilter, { nullable: true })
+	filter?: PaymentFilter;
 }

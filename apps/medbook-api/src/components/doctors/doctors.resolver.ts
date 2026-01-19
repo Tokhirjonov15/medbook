@@ -43,22 +43,19 @@ export class DoctorsResolver {
 
 	@UseGuards(WithoutGuard)
 	@Query(() => Doctor)
-	public async getDoctor(
-		@Args('doctorId') input: string,
-		@AuthMember('_id') memberId: ObjectId,
-	): Promise<Doctor> {
-		console.log("Query: getDoctor");
+	public async getDoctor(@Args('doctorId') input: string, @AuthMember('_id') memberId: ObjectId): Promise<Doctor> {
+		console.log('Query: getDoctor');
 		const doctorId = shapeIntoMongoObjectId(input);
 		return await this.doctorsService.getDoctor(memberId, doctorId);
-    }
+	}
 
 	@UseGuards(AuthGuard)
 	@Mutation(() => Doctor)
 	public async likeTargetDoctor(
-		@Args('memberId') input: string, 
-		@AuthMember('_id') memberId: ObjectId
+		@Args('memberId') input: string,
+		@AuthMember('_id') memberId: ObjectId,
 	): Promise<Doctor> {
-		console.log("Mutation: likeTargetDoctor");
+		console.log('Mutation: likeTargetDoctor');
 		const likeRefId = shapeIntoMongoObjectId(input);
 		return await this.doctorsService.likeTargetDoctor(memberId, likeRefId);
 	}
@@ -68,20 +65,16 @@ export class DoctorsResolver {
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
 	@Query(() => Doctors)
-	public async getAllDoctorsByAdmin(
-		@Args('input') input: DoctorsInquiry
-	): Promise<Doctors> {
-		console.log("Query: getAllDoctorsByAdmin");
+	public async getAllDoctorsByAdmin(@Args('input') input: DoctorsInquiry): Promise<Doctors> {
+		console.log('Query: getAllDoctorsByAdmin');
 		return await this.doctorsService.getAllDoctorsByAdmin(input);
-    }
+	}
 
 	@Roles(MemberType.ADMIN)
-    @UseGuards(RolesGuard)
-    @Mutation(() => Doctor)
-    public async updateDoctorByAdmin(
-        @Args('input') input: DoctorUpdate
-    ): Promise<Doctor> {
-        console.log("Mutation: updateDoctorByAdmin");
-        return await this.doctorsService.updateDoctorByAdmin(input);
-    }	
+	@UseGuards(RolesGuard)
+	@Mutation(() => Doctor)
+	public async updateDoctorByAdmin(@Args('input') input: DoctorUpdate): Promise<Doctor> {
+		console.log('Mutation: updateDoctorByAdmin');
+		return await this.doctorsService.updateDoctorByAdmin(input);
+	}
 }

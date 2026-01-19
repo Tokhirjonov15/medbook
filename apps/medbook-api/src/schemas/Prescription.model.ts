@@ -1,82 +1,82 @@
 import { Schema } from 'mongoose';
 
 const PrescriptionSchema = new Schema(
-  {
-    appointment: {
-      type: Schema.Types.ObjectId,
-      ref: 'Appointment',
-      required: true,
-      unique: true,
-      index: true,
-    },
+	{
+		appointment: {
+			type: Schema.Types.ObjectId,
+			ref: 'Appointment',
+			required: true,
+			unique: true,
+			index: true,
+		},
 
-    patient: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-      index: true,
-    },
+		patient: {
+			type: Schema.Types.ObjectId,
+			ref: 'User',
+			required: true,
+			index: true,
+		},
 
-    doctor: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-      index: true,
-    },
+		doctor: {
+			type: Schema.Types.ObjectId,
+			ref: 'User',
+			required: true,
+			index: true,
+		},
 
-    diagnosis: {
-      type: String,
-      required: true,
-    },
+		diagnosis: {
+			type: String,
+			required: true,
+		},
 
-    medications: [
-      {
-        name: String,
-        dosage: String,
-        frequency: String,
-        duration: String,
-        instructions: String,
-        timing: String,
-      },
-    ],
+		medications: [
+			{
+				name: String,
+				dosage: String,
+				frequency: String,
+				duration: String,
+				instructions: String,
+				timing: String,
+			},
+		],
 
-    labTests: [
-      {
-        testName: String,
-        instructions: String,
-      },
-    ],
+		labTests: [
+			{
+				testName: String,
+				instructions: String,
+			},
+		],
 
-    advice: {
-      type: String,
-    },
+		advice: {
+			type: String,
+		},
 
-    nextVisit: {
-      type: Date,
-    },
+		nextVisit: {
+			type: Date,
+		},
 
-    attachments: {
-      type: [String],
-      default: [],
-    },
+		attachments: {
+			type: [String],
+			default: [],
+		},
 
-    vitals: {
-      bloodPressure: String,
-      temperature: Number,
-      pulse: Number,
-      weight: Number,
-      height: Number,
-      oxygenSaturation: Number,
-    },
+		vitals: {
+			bloodPressure: String,
+			temperature: Number,
+			pulse: Number,
+			weight: Number,
+			height: Number,
+			oxygenSaturation: Number,
+		},
 
-    notes: {
-      type: String,
-    },
-  },
-  {
-    timestamps: true,
-    collection: 'prescriptions',
-  }
+		notes: {
+			type: String,
+		},
+	},
+	{
+		timestamps: true,
+		collection: 'prescriptions',
+	},
 );
 
 // Indexes

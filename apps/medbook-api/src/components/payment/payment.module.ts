@@ -7,14 +7,14 @@ import PaymentSchema from '../../schemas/Payment.model';
 import AppointmentSchema from '../../schemas/Appoinment.model';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: 'Payment', schema: PaymentSchema },
-      { name: 'Appointment', schema: AppointmentSchema },
-    ]),
-    AuthModule,
-  ],
-  providers: [PaymentService, PaymentResolver],
-  exports: [PaymentService],
+	imports: [
+		MongooseModule.forFeature([
+			{ name: 'Payment', schema: PaymentSchema },
+			{ name: 'Appointment', schema: AppointmentSchema },
+		]),
+		AuthModule,
+	],
+	providers: [PaymentService, PaymentResolver],
+	exports: [PaymentService],
 })
 export class PaymentModule {}
