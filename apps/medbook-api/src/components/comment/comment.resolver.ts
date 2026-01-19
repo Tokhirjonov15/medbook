@@ -50,6 +50,17 @@ export class CommentResolver {
         return result;
     }
 
+    @UseGuards(AuthGuard)
+    @Mutation(() => Comment)
+    public async likeTargetComment(
+        @Args('memberId') input: string, 
+        @AuthMember('_id') memberId: ObjectId
+    ): Promise<Comment> {
+        console.log("Mutation: likeTargetComment");
+        const likeRefId = shapeIntoMongoObjectId(input);
+        return await this.commentService.likeTargetComment(memberId, likeRefId);
+    }
+
     /** ADMIN */
 
     @Roles(MemberType.ADMIN)

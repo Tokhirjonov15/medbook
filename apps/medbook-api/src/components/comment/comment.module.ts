@@ -7,6 +7,7 @@ import { AuthModule } from '../auth/auth.module';
 import { MemberModule } from '../member/member.module';
 import { BoardArticleModule } from '../board-article/board-article.module';
 import { DoctorModule } from '../doctors/doctors.module';
+import { LikeModule } from '../like/like.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { DoctorModule } from '../doctors/doctors.module';
     MemberModule,
     BoardArticleModule,
     DoctorModule,
+    LikeModule,
   ],
   providers: [CommentResolver, CommentService],
 })

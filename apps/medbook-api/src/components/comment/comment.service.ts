@@ -10,7 +10,10 @@ import { CommentGroup, CommentStatus } from '../../libs/enums/comment.enum';
 import { DoctorsService } from '../doctors/doctors.service';
 import { CommentUpdate } from '../../libs/dto/comment/comment.update';
 import { lookupMember } from '../../libs/config';
-import { T } from '../../libs/types/common';
+import { StatisticModifier, T } from '../../libs/types/common';
+import { LikeInput } from '../../libs/dto/like/like.input';
+import { LikeGroup } from '../../libs/enums/like.enum';
+import { LikeService } from '../like/like.service';
 
 @Injectable()
 export class CommentService {
@@ -19,6 +22,7 @@ export class CommentService {
         private readonly memberService: MemberService,
         private readonly boardArticleService: BoardArticleService,
         private readonly doctorService: DoctorsService,
+        private readonly likeService: LikeService,
     ) {}
 
     public async createComment(memberId: ObjectId, input: CommentInput): Promise<Comment> {
@@ -157,9 +161,46 @@ export class CommentService {
         return result[0];
     }
 
+    public async likeTargetComment(memberId: ObjectId, likeRefId: ObjectId): Promise<Comment> {
+        const target = await this.commentModel
+             .findOne({ _id: likeRefId, commentStatus: CommentStatus.ACTIVE })
+             .exec();
+        if(!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+        const input: LikeInput = {
+            memberId: memberId,
+            likeRefId: likeRefId,
+            likeGroup: LikeGroup.COMMENT
+        };
+
+        const modifier: number = await this.likeService.toggleLike(input);
+        const result = await this.commentStatsEditor({ _id: likeRefId, targetKey: "commentLikes", modifier: modifier });
+
+        if(!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
+        return result;
+    }
+
     public async removeCommentByAdmin(input: ObjectId): Promise<Comment> {
         const result = await this.commentModel.findByIdAndDelete(input);
         if (!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
         return result;
+    }
+
+    public async commentStatsEditor(input: StatisticModifier): Promise<Comment> {
+        const { _id, targetKey, modifier } = input;
+		const result = await this.commentModel
+			.findByIdAndUpdate(
+				_id, 
+				{
+					$inc: { [targetKey]: modifier }, 
+				}, 
+				{ new: true }
+			)
+			.exec();
+		if (!result) {
+			throw new InternalServerErrorException(Message.UPDATE_FAILED);
+		}
+
+		return result;
     }
 }
