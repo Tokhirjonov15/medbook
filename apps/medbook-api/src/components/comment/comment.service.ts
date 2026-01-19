@@ -162,10 +162,10 @@ export class CommentService {
     }
 
     public async likeTargetComment(memberId: ObjectId, likeRefId: ObjectId): Promise<Comment> {
-        const target = await this.commentModel
+        const targetComment = await this.commentModel
              .findOne({ _id: likeRefId, commentStatus: CommentStatus.ACTIVE })
              .exec();
-        if(!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+        if(!targetComment) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
         const input: LikeInput = {
             memberId: memberId,
@@ -177,6 +177,7 @@ export class CommentService {
         const result = await this.commentStatsEditor({ _id: likeRefId, targetKey: "commentLikes", modifier: modifier });
 
         if(!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
+
         return result;
     }
 

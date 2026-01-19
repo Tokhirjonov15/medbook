@@ -124,6 +124,9 @@ export class DoctorsService {
 
                 targetDoctor.doctorViews++;
             }
+            const likeInput = {memberId: memberId, likeRefId: doctorId, likeGroup: LikeGroup.DOCTOR};
+			//@ts-ignore
+			targetDoctor.meLiked = await this.likeService.checkLikeExistence(likeInput);
         }
 
         return targetDoctor;

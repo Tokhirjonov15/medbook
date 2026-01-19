@@ -3,6 +3,7 @@ import type { ObjectId } from 'mongoose';
 import { CommentGroup, CommentStatus } from '../../enums/comment.enum';
 import { Member } from '../members/member';
 import { MetaCounter } from '../doctors/doctor';
+import { MeLiked } from '../like/like';
 
 @ObjectType()
 export class Comment {
@@ -43,6 +44,9 @@ export class Comment {
 	updatedAt: Date;
 
 	/** from aggregation **/
+
+	@Field(() => [MeLiked], {nullable: true})
+    meLiked?: MeLiked;
 
 	@Field(() => Member, { nullable: true })
 	memberData?: Member;

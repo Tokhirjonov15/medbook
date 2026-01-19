@@ -2,6 +2,7 @@ import { Field, ObjectType, ID, Int } from '@nestjs/graphql';
 import { Gender } from '../../enums/gender.enum';
 import type { ObjectId } from 'mongoose';
 import { MemberStatus, MemberType } from '../../enums/member.enum';
+import { MeLiked } from '../like/like';
 
 @ObjectType()
 export class Coordinates {
@@ -47,82 +48,87 @@ export class EmergencyContact {
 
 @ObjectType()
 export class Member {
-  @Field(() => String)
-  _id: ObjectId;
+    @Field(() => String)
+    _id: ObjectId;
 
-  @Field(() => String)
-  memberNick: string;
+    @Field(() => String)
+    memberNick: string;
 
-  @Field(() => MemberType)
-  memberType: MemberType;
+    @Field(() => MemberType)
+    memberType: MemberType;
 
-  @Field(() => MemberStatus)
-	memberStatus: MemberStatus;
+    @Field(() => MemberStatus)
+    memberStatus: MemberStatus;
 
-  @Field(() => String)
-  memberPhone: string;
+    @Field(() => String)
+    memberPhone: string;
 
-  memberPassword?: string;
+    memberPassword?: string;
 
-  @Field(() => String, { nullable: true })
-  memberImage: string;
+    @Field(() => String, { nullable: true })
+    memberImage: string;
 
-  @Field(() => Gender, { nullable: true })
-  memberGender?: Gender;
+    @Field(() => Gender, { nullable: true })
+    memberGender?: Gender;
 
-  @Field(() => Int)
-  memberArticles: number;
+    @Field(() => Int)
+    memberArticles: number;
 
-  @Field(() => Int)
-  memberFollowers: number;
+    @Field(() => Int)
+    memberFollowers: number;
 
-  @Field(() => Int)
-  memberLikes: number;
+    @Field(() => Int)
+    memberLikes: number;
 
-  @Field(() => Int)
-  memberFollowings: number;
+    @Field(() => Int)
+    memberFollowings: number;
 
-  @Field(() => Int)
-  memberComments: number;
+    @Field(() => Int)
+    memberComments: number;
 
-  @Field(() => Int)
-  memberWarnings: number;
+    @Field(() => Int)
+    memberWarnings: number;
 
-  @Field(() => Int)
-  memberBlocks: number;
+    @Field(() => Int)
+    memberBlocks: number;
 
-  @Field(() => Address, { nullable: true })
-  memberAddress?: Address;
+    @Field(() => Address, { nullable: true })
+    memberAddress?: Address;
 
-  @Field(() => Boolean)
-  isActive: boolean;
+    @Field(() => Boolean)
+    isActive: boolean;
 
-  @Field(() => Date, { nullable: true })
-  lastLogin?: Date;
+    @Field(() => Date, { nullable: true })
+    lastLogin?: Date;
 
-  @Field(() => String, { nullable: true })
-  bloodGroup?: string;
+    @Field(() => String, { nullable: true })
+    bloodGroup?: string;
 
-  @Field(() => [String], { nullable: true })
-  allergies?: string[];
+    @Field(() => [String], { nullable: true })
+    allergies?: string[];
 
-  @Field(() => [String], { nullable: true })
-  chronicDiseases?: string[];
+    @Field(() => [String], { nullable: true })
+    chronicDiseases?: string[];
 
-  @Field(() => EmergencyContact, { nullable: true })
-  emergencyContact?: EmergencyContact;
+    @Field(() => EmergencyContact, { nullable: true })
+    emergencyContact?: EmergencyContact;
 
-  @Field(() => ID, { nullable: true })
-  doctorProfile?: string;
+    @Field(() => ID, { nullable: true })
+    doctorProfile?: string;
 
-  @Field(() => Date)
-  createdAt: Date;
+    @Field(() => Date)
+    createdAt: Date;
 
-  @Field(() => Date)
-  updatedAt: Date;
+    @Field(() => Date)
+    updatedAt: Date;
 
-  @Field(() => String, { nullable: true })
-  accessToken?: string;
+    @Field(() => String, { nullable: true })
+    accessToken?: string;
+
+  /** from aggregation  */
+
+    @Field(() => [MeLiked], {nullable: true})
+    meLiked?: MeLiked;
 }
 
 @ObjectType()
