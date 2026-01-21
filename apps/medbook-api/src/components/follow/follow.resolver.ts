@@ -29,4 +29,23 @@ export class FollowResolver {
 		const followingid = shapeIntoMongoObjectId(input);
 		return await this.followService.unsubscribeMember(memberId, followingid);
 	}
+
+	@UseGuards(AuthGuard)
+	@Mutation((returns) => Follower)
+	public async subscribeDoctor(@Args('input') input: string, @AuthMember('_id') memberId: ObjectId): Promise<Follower> {
+		console.log('Mutation: subscribeDoctor');
+		const doctorId = shapeIntoMongoObjectId(input);
+		return await this.followService.subscribeDoctor(memberId, doctorId);
+	}
+
+	@UseGuards(AuthGuard)
+	@Mutation((returns) => Follower)
+	public async unsubscribeDoctor(
+		@Args('input') input: string,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<Follower> {
+		console.log('Mutation: unsubscribeDoctor');
+		const doctorId = shapeIntoMongoObjectId(input);
+		return await this.followService.unsubscribeDoctor(memberId, doctorId);
+	}
 }
