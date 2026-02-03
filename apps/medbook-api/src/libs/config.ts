@@ -28,7 +28,6 @@ export const lookupMember = {
 		as: 'memberData',
 	},
 };
-
 export const lookupAppointment = {
 	$lookup: {
 		from: 'appointments',
@@ -37,7 +36,6 @@ export const lookupAppointment = {
 		as: 'appointmentData',
 	},
 };
-
 export const lookupPatient = {
 	$lookup: {
 		from: 'members',
@@ -46,7 +44,6 @@ export const lookupPatient = {
 		as: 'patientData',
 	},
 };
-
 export const lookupDoctor = {
 	$lookup: {
 		from: 'doctor',
@@ -55,12 +52,35 @@ export const lookupDoctor = {
 		as: 'doctorData',
 	},
 };
-
 export const lookupRefunded = {
 	$lookup: {
 		from: 'members',
 		localField: 'refundedBy',
 		foreignField: '_id',
 		as: 'refundedByData',
+	},
+};
+export const lookupFollowingDataMember = {
+	$lookup: {
+		from: 'members',
+		localField: 'followingId',
+		foreignField: '_id',
+		as: 'followingData',
+	},
+};
+export const lookupFollowingDataDoctor = {
+	$lookup: {
+		from: 'doctors',
+		localField: 'followingId',
+		foreignField: '_id',
+		as: 'doctorData',
+	},
+};
+export const lookupFollowerData = {
+	$lookup: {
+		from: 'members',
+		localField: 'followerId',
+		foreignField: '_id',
+		as: 'followerData',
 	},
 };
