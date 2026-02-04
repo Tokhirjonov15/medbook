@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { DoctorsService } from './doctors.service';
 import { Doctor, Doctors } from '../../libs/dto/doctors/doctor';
-import { DoctorSignupInput } from '../../libs/dto/doctors/doctor.input';
+import { DoctorSignupInput, OrdinaryInquiry } from '../../libs/dto/doctors/doctor.input';
 import { DoctorsInquiry, LoginInput } from '../../libs/dto/members/member.input';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UseGuards } from '@nestjs/common';
@@ -58,6 +58,16 @@ export class DoctorsResolver {
 		console.log('Mutation: likeTargetDoctor');
 		const likeRefId = shapeIntoMongoObjectId(input);
 		return await this.doctorsService.likeTargetDoctor(memberId, likeRefId);
+	}
+
+	@UseGuards(AuthGuard)
+	@Query((returns) => Doctors)
+	public async getVisitedDoctors(
+		@Args("input") input: OrdinaryInquiry,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<Doctors> {
+		console.log("Query: getVisitedDoctors");
+		return await this.doctorsService.getVisitedDoctors(memberId, input);
 	}
 
 	/** ADMIN */

@@ -184,3 +184,12 @@ export const lookupFollowerData = {
 		as: 'followerData',
 	},
 };
+
+export const lookupDoctorVisit = {
+    $lookup: {
+        from: 'members',
+        localField: 'visitedDoctor.memberId',
+        foreignField: '_id',
+        as: 'visitedDoctor.memberData',
+    },
+};

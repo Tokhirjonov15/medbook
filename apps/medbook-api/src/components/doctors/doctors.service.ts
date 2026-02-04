@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Doctor, Doctors } from '../../libs/dto/doctors/doctor';
 import { Model, ObjectId, Types } from 'mongoose';
 import { AuthService } from '../auth/auth.service';
-import { DoctorSignupInput } from '../../libs/dto/doctors/doctor.input';
+import { DoctorSignupInput, OrdinaryInquiry } from '../../libs/dto/doctors/doctor.input';
 import { Direction, Message } from '../../libs/enums/common.enum';
 import { DoctorsInquiry, LoginInput } from '../../libs/dto/members/member.input';
 import { StatisticModifier, T } from '../../libs/types/common';
@@ -136,6 +136,11 @@ export class DoctorsService {
 
 		if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
 		return result;
+	}
+
+	public async getVisitedDoctors(memberId: ObjectId, input: OrdinaryInquiry): Promise<Doctors> {
+		const objectId = typeof memberId === 'string' ? new Types.ObjectId(memberId) : memberId;
+		return this.viewService.getVisitedDoctors(objectId as any, input);
 	}
 
 	public async getAllDoctorsByAdmin(input: DoctorsInquiry): Promise<Doctors> {
