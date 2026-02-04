@@ -22,6 +22,14 @@ export const shapeIntoMongoObjectId = (target: any) => {
 };
 
 export const lookupAuthMemberLiked = (memberId: T, targetRefId: string = '$_id') => {
+    if (!memberId) {
+        return {
+            $addFields: {
+                meLiked: null
+            }
+        };
+    }
+    
     const memberIdObj = memberId instanceof ObjectId 
         ? memberId 
         : new ObjectId(memberId.toString());
@@ -55,6 +63,59 @@ export const lookupAuthMemberLiked = (memberId: T, targetRefId: string = '$_id')
                 },
             ],
             as: 'meLiked',
+        },
+    };
+};
+
+interface LookupAuthMemberFollowed {
+    followerId: T;
+    followingId: string;
+}
+
+export const lookupAuthMemberFollowed = (input: LookupAuthMemberFollowed) => {
+    const { followerId, followingId } = input;
+    
+    if (!followerId) {
+        return {
+            $addFields: {
+                meFollowed: null
+            }
+        };
+    }
+
+    const followerIdObj = followerId instanceof ObjectId 
+        ? followerId 
+        : new ObjectId(followerId.toString());
+
+    return {
+        $lookup: {
+            from: "follows",
+            let: {
+                localFollowerId: followerIdObj,
+                localFollowingId: followingId,
+                localMyFavorite: true
+            },
+            pipeline: [
+                {
+                    $match: {
+                        $expr: {
+                            $and: [
+                                { $eq: ["$followerId", "$$localFollowerId"] }, 
+                                { $eq: ["$followingId", "$$localFollowingId"] }
+                            ],
+                        },
+                    },
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        followerId: 1,
+                        followingId: 1,
+                        myFollowing: '$$localMyFavorite',
+                    },
+                },
+            ],
+            as: "meFollowed",
         },
     };
 };

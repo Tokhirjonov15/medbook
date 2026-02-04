@@ -35,11 +35,11 @@ export class Follower {
 
 	/** from aggregation **/
 
-	@Field(() => [MeLiked], { nullable: true })
-	meLiked?: MeLiked[];
+	@Field(() => MeLiked, { nullable: true })
+	meLiked?: MeLiked;
 
-	@Field(() => [MeFollowed], { nullable: true })
-	meFollowed?: MeFollowed[];
+	@Field(() => MeFollowed, { nullable: true })
+	meFollowed?: MeFollowed;
 
 	@Field(() => Member, { nullable: true })
 	followerData?: Member;
@@ -64,11 +64,11 @@ export class Following {
 
 	/** from aggregation **/
 
-	@Field(() => [MeLiked], { nullable: true })
-	meLiked?: MeLiked[];
+	@Field(() => MeLiked, { nullable: true })
+	meLiked?: MeLiked;
 
-	@Field(() => [MeFollowed], { nullable: true })
-	meFollowed?: MeFollowed[];
+	@Field(() => MeFollowed, { nullable: true })
+	meFollowed?: MeFollowed;
 
 	@Field(() => Member, { nullable: true })
 	followingData?: Member;
