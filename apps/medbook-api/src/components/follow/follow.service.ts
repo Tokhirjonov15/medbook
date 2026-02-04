@@ -6,7 +6,7 @@ import { Follower, Followers, Following, Followings } from '../../libs/dto/follo
 import { Direction, Message } from '../../libs/enums/common.enum';
 import { DoctorsService } from '../doctors/doctors.service';
 import { FollowInquiry } from '../../libs/dto/follow/follow.input';
-import { lookupFollowingDataDoctor, lookupFollowingDataMember } from '../../libs/config';
+import { lookupAuthMemberFollowed, lookupAuthMemberLiked, lookupFollowingDataDoctor, lookupFollowingDataMember } from '../../libs/config';
 import { T } from '../../libs/types/common';
 import { Member } from '../../libs/dto/members/member';
 import { Doctor } from '../../libs/dto/doctors/doctor';

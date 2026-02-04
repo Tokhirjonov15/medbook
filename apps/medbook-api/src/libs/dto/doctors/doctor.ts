@@ -104,7 +104,7 @@ export class Doctor {
 
 	/** from aggregation  */
 
-	@Field(() => [MeLiked], { nullable: true })
+	@Field(() => MeLiked, { nullable: true })
 	meLiked?: MeLiked;
 
 	@Field(() => [MeFollowed], {nullable: true})

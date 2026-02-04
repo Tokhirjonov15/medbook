@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { DoctorsInquiry, LoginInput, MembersInquiry, SignupInput } from '../../libs/dto/members/member.input';
 import { Member, Members } from '../../libs/dto/members/member';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId } from 'mongoose';
+import { Model, ObjectId, Types } from 'mongoose';
 import { MemberStatus, MemberType } from '../../libs/enums/member.enum';
 import { Direction, Message } from '../../libs/enums/common.enum';
 import { AuthService } from '../auth/auth.service';
@@ -10,7 +10,7 @@ import { MemberUpdate } from '../../libs/dto/members/member.update';
 import { StatisticModifier, T } from '../../libs/types/common';
 import { Doctor, Doctors } from '../../libs/dto/doctors/doctor';
 import { DoctorsService } from '../doctors/doctors.service';
-import { shapeIntoMongoObjectId } from '../../libs/config';
+import { lookupAuthMemberLiked, lookupDoctor, lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
 import { LikeInput } from '../../libs/dto/like/like.input';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { LikeService } from '../like/like.service';
@@ -101,48 +101,56 @@ export class MemberService {
 	}
 
 	private async checkSubscription(followerId: ObjectId, followingId: ObjectId): Promise<MeFollowed[]> {
-		const result = await this.followModel.findOne({followingId: followingId, followerId: followerId}).exec();
+		const result = await this.followModel.findOne({ followingId: followingId, followerId: followerId }).exec();
 		return result ? [{ followerId: followerId, followingId: followingId, myFollowing: true }] : [];
 	}
 
 	public async getDoctors(memberId: ObjectId, input: DoctorsInquiry): Promise<Doctors> {
-		const { text } = input.search;
-		const match: T = {};
-		const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
+    const { text } = input.search;
+    const match: T = {};
+    const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
 
-		this.shapeMatchQuery(match, input);
-		console.log('match:', match);
+    this.shapeMatchQuery(match, input);
 
-		if (text) {
-			match.$or = [
-				{ memberNick: { $regex: new RegExp(text, 'i') } },
-				{ memberFullName: { $regex: new RegExp(text, 'i') } },
-				{ specializations: { $regex: new RegExp(text, 'i') } },
-			];
-		}
+    if (text) {
+        match.$or = [
+            { memberNick: { $regex: new RegExp(text, 'i') } },
+            { memberFullName: { $regex: new RegExp(text, 'i') } },
+            { specializations: { $regex: new RegExp(text, 'i') } },
+        ];
+    }
 
-		console.log('match:', match);
+    const result = await this.doctorModel
+    .aggregate([
+        { $match: match },
+        { $sort: sort },
+        {
+            $facet: {
+                list: [
+                    { $skip: (input.page - 1) * input.limit }, 
+                    { $limit: input.limit },
+                    ...(memberId ? [
+                        lookupAuthMemberLiked(memberId),
+                        {
+                            $unwind: {
+                                path: '$meLiked',
+                                preserveNullAndEmptyArrays: true
+                            }
+                        }
+                    ] : [])
+                ],
+                metaCounter: [{ $count: 'total' }],
+            },
+        },
+    ])
+    .exec();
 
-		const result = await this.doctorModel
-			.aggregate([
-				{ $match: match },
-				{ $sort: sort },
-				{
-					$facet: {
-						list: [{ $skip: (input.page - 1) * input.limit }, { $limit: input.limit }],
-						metaCounter: [{ $count: 'total' }],
-					},
-				},
-			])
-			.exec();
+    if (!result.length || !result[0].list.length) {
+        throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+    }
 
-		console.log('result:', result);
-		if (!result.length || !result[0].list.length) {
-			throw new InternalServerErrorException(Message.NO_DATA_FOUND);
-		}
-
-		return result[0];
-	}
+    return result[0];
+}
 
 	public async likeTargetMember(memberId: ObjectId, likeRefId: ObjectId): Promise<Member> {
 		const target = await this.memberModel.findOne({ _id: likeRefId, memberStatus: MemberStatus.ACTIVE }).exec();
@@ -190,10 +198,7 @@ export class MemberService {
 				{ $sort: sort },
 				{
 					$facet: {
-						list: [
-							{ $skip: (input.page - 1) * input.limit }, 
-							{ $limit: input.limit }
-						],
+						list: [{ $skip: (input.page - 1) * input.limit }, { $limit: input.limit }],
 						metaCounter: [{ $count: 'total' }],
 					},
 				},
