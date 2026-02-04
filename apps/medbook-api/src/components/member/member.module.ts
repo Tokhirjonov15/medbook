@@ -9,6 +9,7 @@ import { DoctorModule } from '../doctors/doctors.module';
 import { ViewModule } from '../view/view.module';
 import ViewSchema from '../../schemas/View.model';
 import { LikeModule } from '../like/like.module';
+import FollowSchema from '../../schemas/Follow.model';
 
 @Module({
 	imports: [
@@ -16,6 +17,7 @@ import { LikeModule } from '../like/like.module';
 			{ name: 'Member', schema: MemberSchema },
 			{ name: 'Doctor', schema: DoctorProfileSchema },
 			{ name: 'View', schema: ViewSchema },
+			{ name: 'Follow', schema: FollowSchema },
 		]),
 		AuthModule,
 		DoctorModule,

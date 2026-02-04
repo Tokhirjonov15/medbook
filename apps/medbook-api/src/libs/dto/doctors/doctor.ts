@@ -3,6 +3,7 @@ import type { ObjectId } from 'mongoose';
 import { Gender } from '../../enums/gender.enum';
 import { MemberStatus, MemberType } from '../../enums/member.enum';
 import { MeLiked } from '../like/like';
+import { MeFollowed } from '../follow/follow';
 
 @ObjectType()
 export class Doctor {
@@ -105,6 +106,9 @@ export class Doctor {
 
 	@Field(() => [MeLiked], { nullable: true })
 	meLiked?: MeLiked;
+
+	@Field(() => [MeFollowed], {nullable: true})
+	meFollowed?: MeFollowed[];
 }
 
 @ObjectType()
