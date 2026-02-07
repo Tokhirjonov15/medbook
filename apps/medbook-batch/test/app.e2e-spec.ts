@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { MedbookBatchModule } from './../src/medbook-batch.module';
+import { MedbookBatchModule } from '../src/batch.module';
 
 describe('MedbookBatchController (e2e)', () => {
 	let app: INestApplication;
