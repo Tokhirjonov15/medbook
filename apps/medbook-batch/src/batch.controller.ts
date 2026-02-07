@@ -19,17 +19,6 @@ export class BatchController {
 	// 	this.logger.debug('EXECUTED!');
 	// }
 
-	@Cron('00 * * * * *', { name: BATCH_ROLLBACK })
-	public async batchRollback() {
-		try {
-			this.logger['context'] = BATCH_ROLLBACK;
-			this.logger.debug('EXECUTED!');
-			await this.batchService.batchRollback();
-		} catch (err) {
-			await this.logger.error(err);
-		}
-	}
-
 	@Cron('20 * * * * *', { name: BATCH_TOP_DOCTORS })
 	public async batchDoctors() {
 		try {
