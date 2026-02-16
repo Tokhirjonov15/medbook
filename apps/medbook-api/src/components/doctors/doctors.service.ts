@@ -27,13 +27,26 @@ export class DoctorsService {
 		private likeService: LikeService,
 	) {}
 
+	private normalizeDoctorSpecialization<T>(doctor: T): T {
+		if (!doctor) return doctor;
+		const raw = (doctor as any).specialization;
+		if (Array.isArray(raw)) return doctor;
+		if (typeof raw === 'string' && raw.trim()) {
+			(doctor as any).specialization = [raw];
+		} else if (!raw) {
+			(doctor as any).specialization = [];
+		}
+		return doctor;
+	}
+
 	public async doctorSignup(input: DoctorSignupInput): Promise<Doctor> {
 		input.memberPassword = await this.authService.hashPassword(input.memberPassword);
 		try {
 			const result = await this.doctorModel.create(input);
+			this.normalizeDoctorSpecialization(result as any);
 			result.accessToken = await this.authService.createToken(result);
 			return result;
-		} catch (err) {
+		} catch (err: any) {
 			console.log('ERROR, service.model:', err.message);
 			throw new BadRequestException(Message.USED_MEMBER_NICK_OR_PHONE);
 		}
@@ -56,6 +69,7 @@ export class DoctorsService {
 		}
 
 		response.memberPassword = undefined;
+		this.normalizeDoctorSpecialization(response as any);
 		response.accessToken = await this.authService.createToken(response);
 
 		return response;
@@ -79,6 +93,7 @@ export class DoctorsService {
 			throw new InternalServerErrorException(Message.UPDATE_FAILED);
 		}
 
+		this.normalizeDoctorSpecialization(result as any);
 		result.accessToken = await this.authService.createToken(result);
 		return result;
 	}
@@ -93,6 +108,25 @@ export class DoctorsService {
 		if (!targetDoctor) {
 			throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 		}
+
+		// Self-heal counters: keep doctor follower/following stats consistent with follows collection.
+		const [realFollowers, realFollowings] = await Promise.all([
+			this.followModel.countDocuments({ followingId: doctorId }).exec(),
+			this.followModel.countDocuments({ followerId: doctorId }).exec(),
+		]);
+		const statsPatch: T = {};
+		if (targetDoctor.memberFollowers !== realFollowers) {
+			targetDoctor.memberFollowers = realFollowers;
+			statsPatch.memberFollowers = realFollowers;
+		}
+		if (targetDoctor.memberFollowings !== realFollowings) {
+			targetDoctor.memberFollowings = realFollowings;
+			statsPatch.memberFollowings = realFollowings;
+		}
+		if (Object.keys(statsPatch).length) {
+			await this.doctorModel.updateOne({ _id: doctorId }, { $set: statsPatch }).exec();
+		}
+
 		if (memberId) {
 			const viewInput: ViewInput = {
 				memberId: memberId,
@@ -113,6 +147,7 @@ export class DoctorsService {
 		    targetDoctor.meFollowed = await this.checkSubscription(memberId, doctorId);
 		}
 
+		this.normalizeDoctorSpecialization(targetDoctor as any);
 		return targetDoctor;
 	}
 
@@ -135,6 +170,7 @@ export class DoctorsService {
 		const result = await this.doctorStatsEditor({ _id: likeRefId, targetKey: 'memberLikes', modifier: modifier });
 
 		if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
+		this.normalizeDoctorSpecialization(result as any);
 		return result;
 	}
 
@@ -173,6 +209,7 @@ export class DoctorsService {
 			throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 		}
 
+		result[0].list = result[0].list.map((doctor: any) => this.normalizeDoctorSpecialization(doctor));
 		return result[0];
 	}
 
@@ -187,6 +224,7 @@ export class DoctorsService {
 			throw new InternalServerErrorException(Message.UPDATE_FAILED);
 		}
 
+		this.normalizeDoctorSpecialization(result as any);
 		return result;
 	}
 
@@ -205,6 +243,7 @@ export class DoctorsService {
 			throw new InternalServerErrorException(Message.UPDATE_FAILED);
 		}
 
+		this.normalizeDoctorSpecialization(result as any);
 		return result;
 	}
 }

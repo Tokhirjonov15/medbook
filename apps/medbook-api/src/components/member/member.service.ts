@@ -87,8 +87,14 @@ export class MemberService {
 				$in: [MemberStatus.ACTIVE, MemberStatus.BLOCK],
 			},
 		};
-		const targetMember = await this.memberModel.findOne(search).exec();
+		let targetMember: any = await this.memberModel.findOne(search).exec();
+		if (!targetMember) {
+			targetMember = await this.doctorModel.findOne(search).exec();
+		}
 		if (!targetMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+		if (targetMember.isActive === undefined || targetMember.isActive === null) {
+			targetMember.isActive = true;
+		}
 
 		//meLiked
 		const likeInput = { memberId: memberId, likeRefId: targetId, likeGroup: LikeGroup.MEMBER };
@@ -106,18 +112,33 @@ export class MemberService {
 	}
 
 	public async getDoctors(memberId: ObjectId, input: DoctorsInquiry): Promise<Doctors> {
-    const { text } = input.search;
+    const { text, location } = input.search;
     const match: T = {};
     const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
 
     this.shapeMatchQuery(match, input);
 
-    if (text) {
-        match.$or = [
+    const textConditions: T[] = text
+        ? [
             { memberNick: { $regex: new RegExp(text, 'i') } },
             { memberFullName: { $regex: new RegExp(text, 'i') } },
-            { specializations: { $regex: new RegExp(text, 'i') } },
-        ];
+            { specialization: { $regex: new RegExp(text, 'i') } },
+          ]
+        : [];
+
+    const locationConditions: T[] = location
+        ? [
+            { clinicAddress: { $regex: new RegExp(location, 'i') } },
+            { clinicName: { $regex: new RegExp(location, 'i') } },
+          ]
+        : [];
+
+    if (textConditions.length && locationConditions.length) {
+        match.$and = [{ $or: textConditions }, { $or: locationConditions }];
+    } else if (textConditions.length) {
+        match.$or = textConditions;
+    } else if (locationConditions.length) {
+        match.$or = locationConditions;
     }
 
     const result = await this.doctorModel
@@ -130,13 +151,7 @@ export class MemberService {
                     { $skip: (input.page - 1) * input.limit }, 
                     { $limit: input.limit },
                     ...(memberId ? [
-                        lookupAuthMemberLiked(memberId),
-                        {
-                            $unwind: {
-                                path: '$meLiked',
-                                preserveNullAndEmptyArrays: true
-                            }
-                        }
+                        lookupAuthMemberLiked(memberId)
                     ] : [])
                 ],
                 metaCounter: [{ $count: 'total' }],
@@ -148,6 +163,17 @@ export class MemberService {
     if (!result.length || !result[0].list.length) {
         throw new InternalServerErrorException(Message.NO_DATA_FOUND);
     }
+
+    result[0].list = result[0].list.map((doctor: any) => {
+        const raw = doctor?.specialization;
+        if (Array.isArray(raw)) return doctor;
+        if (typeof raw === 'string' && raw.trim()) {
+            doctor.specialization = [raw];
+        } else if (!raw) {
+            doctor.specialization = [];
+        }
+        return doctor;
+    });
 
     return result[0];
 }
@@ -170,17 +196,26 @@ export class MemberService {
 	}
 
 	private shapeMatchQuery(match: T, input: DoctorsInquiry): void {
-		const { memberId, specializationList, consultationTypeList, pricesRange, text } = input.search;
+		const { memberId, specializationList, consultationTypeList, pricesRange } = input.search;
 		if (memberId) match.memberId = shapeIntoMongoObjectId(memberId);
 		if (specializationList) {
 			match.specialization = {
 				$in: Array.isArray(specializationList) ? specializationList : [specializationList],
 			};
 		}
-		if (consultationTypeList) match.consultationType = { $in: consultationTypeList };
+		if (consultationTypeList) {
+			match.consultationType = {
+				$in: Array.isArray(consultationTypeList) ? consultationTypeList : [consultationTypeList],
+			};
+		}
 
-		if (pricesRange) match.consultationFee = { $gte: pricesRange.start, $lte: pricesRange.end };
-		if (text) match.memberNick = { $regex: new RegExp(text, 'i') };
+		if (pricesRange && pricesRange.start !== undefined && pricesRange.end !== undefined) {
+			const min = Number(pricesRange.start);
+			const max = Number(pricesRange.end);
+			if (!Number.isNaN(min) && !Number.isNaN(max) && min <= max) {
+				match.consultationFee = { $gte: min, $lte: max };
+			}
+		}
 	}
 
 	public async getAllMembersByAdmin(input: MembersInquiry): Promise<Members> {
@@ -218,7 +253,7 @@ export class MemberService {
 
 	public async memberStatsEditor(input: StatisticModifier): Promise<Member> {
 		const { _id, targetKey, modifier } = input;
-		const result = await this.memberModel
+		let result: any = await this.memberModel
 			.findByIdAndUpdate(
 				_id,
 				{
@@ -227,6 +262,19 @@ export class MemberService {
 				{ new: true },
 			)
 			.exec();
+
+		if (!result) {
+			result = await this.doctorModel
+				.findByIdAndUpdate(
+					_id,
+					{
+						$inc: { [targetKey]: modifier },
+					},
+					{ new: true },
+				)
+				.exec();
+		}
+
 		if (!result) {
 			throw new InternalServerErrorException(Message.UPDATE_FAILED);
 		}

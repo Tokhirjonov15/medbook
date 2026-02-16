@@ -76,6 +76,10 @@ class DISearch {
 	@IsOptional()
 	@Field(() => String, { nullable: true })
 	text?: string;
+
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	location?: string;
 }
 
 @InputType()
@@ -91,9 +95,9 @@ export class DoctorsInquiry {
 	limit: number;
 
 	@IsOptional()
-	@IsIn([availableDoctorSorts])
+	@IsIn(availableDoctorSorts)
 	@Field(() => String, { nullable: true })
-	sort?: number;
+	sort?: string;
 
 	@IsOptional()
 	@Field(() => Direction, { nullable: true })
@@ -128,9 +132,9 @@ export class MembersInquiry {
 	limit: number;
 
 	@IsOptional()
-	@IsIn([availableMemberSorts])
+	@IsIn(availableMemberSorts)
 	@Field(() => String, { nullable: true })
-	sort?: number;
+	sort?: string;
 
 	@IsOptional()
 	@Field(() => Direction, { nullable: true })

@@ -1,6 +1,7 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
 import type { ObjectId } from 'mongoose';
+import { AppointmentStatus } from '../../enums/appoinment.enum';
 
 @InputType('AppointmentTimeSlotInput')
 export class TimeSlotInput {
@@ -32,4 +33,9 @@ export class AppointmentUpdate {
 	@IsOptional()
 	@Field(() => String, { nullable: true })
 	notes?: string;
+
+	@IsOptional()
+	@IsEnum(AppointmentStatus)
+	@Field(() => AppointmentStatus, { nullable: true })
+	status?: AppointmentStatus;
 }

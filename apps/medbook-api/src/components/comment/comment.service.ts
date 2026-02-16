@@ -9,7 +9,7 @@ import { Direction, Message } from '../../libs/enums/common.enum';
 import { CommentGroup, CommentStatus } from '../../libs/enums/comment.enum';
 import { DoctorsService } from '../doctors/doctors.service';
 import { CommentUpdate } from '../../libs/dto/comment/comment.update';
-import { lookupMember } from '../../libs/config';
+import { lookupAuthMemberLiked } from '../../libs/config';
 import { StatisticModifier, T } from '../../libs/types/common';
 import { LikeInput } from '../../libs/dto/like/like.input';
 import { LikeGroup } from '../../libs/enums/like.enum';
@@ -31,7 +31,7 @@ export class CommentService {
 
 		try {
 			result = await this.commentModel.create(input);
-		} catch (err) {
+		} catch (err:any) {
 			console.log('Error, Service.model: Comment', err.message);
 			throw new BadRequestException(Message.CREATE_FAILED);
 		}
@@ -105,14 +105,60 @@ export class CommentService {
 						list: [
 							{ $skip: (input.page - 1) * input.limit },
 							{ $limit: input.limit },
+							...(memberId
+								? [
+										lookupAuthMemberLiked(memberId),
+									]
+								: [
+										{
+											$addFields: {
+												meLiked: [],
+											},
+										},
+									]),
 							{
 								$addFields: {
 									commentLikes: { $ifNull: ['$commentLikes', 0] },
 									commentReplies: { $ifNull: ['$commentReplies', 0] },
 								},
 							},
-							lookupMember,
-							{ $unwind: '$memberData' },
+							{
+								$lookup: {
+									from: 'members',
+									localField: 'memberId',
+									foreignField: '_id',
+									as: 'memberDataMember',
+								},
+							},
+							{
+								$lookup: {
+									from: 'doctor',
+									localField: 'memberId',
+									foreignField: '_id',
+									as: 'memberDataDoctor',
+								},
+							},
+							{
+								$addFields: {
+									memberData: {
+										$ifNull: [
+											{ $arrayElemAt: ['$memberDataMember', 0] },
+											{ $arrayElemAt: ['$memberDataDoctor', 0] },
+										],
+									},
+								},
+							},
+							{
+								$addFields: {
+									'memberData.isActive': { $ifNull: ['$memberData.isActive', true] },
+								},
+							},
+							{
+								$project: {
+									memberDataMember: 0,
+									memberDataDoctor: 0,
+								},
+							},
 
 							// Replies lookup
 							{
@@ -131,6 +177,17 @@ export class CommentService {
 											},
 										},
 										{ $sort: { createdAt: 1 } },
+										...(memberId
+											? [
+													lookupAuthMemberLiked(memberId),
+												]
+											: [
+													{
+														$addFields: {
+															meLiked: [],
+														},
+													},
+												]),
 
 										{
 											$addFields: {
@@ -144,10 +201,38 @@ export class CommentService {
 												from: 'members',
 												localField: 'memberId',
 												foreignField: '_id',
-												as: 'memberData',
+												as: 'memberDataMember',
 											},
 										},
-										{ $unwind: '$memberData' },
+										{
+											$lookup: {
+												from: 'doctor',
+												localField: 'memberId',
+												foreignField: '_id',
+												as: 'memberDataDoctor',
+											},
+										},
+										{
+											$addFields: {
+												memberData: {
+													$ifNull: [
+														{ $arrayElemAt: ['$memberDataMember', 0] },
+														{ $arrayElemAt: ['$memberDataDoctor', 0] },
+													],
+												},
+											},
+										},
+										{
+											$addFields: {
+												'memberData.isActive': { $ifNull: ['$memberData.isActive', true] },
+											},
+										},
+										{
+											$project: {
+												memberDataMember: 0,
+												memberDataDoctor: 0,
+											},
+										},
 									],
 									as: 'replies',
 								},

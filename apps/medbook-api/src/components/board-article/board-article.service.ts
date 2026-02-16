@@ -14,7 +14,7 @@ import { BoardArticleStatus } from '../../libs/enums/board-article.enum';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { StatisticModifier, T } from '../../libs/types/common';
 import { BoardArticleUpdate } from '../../libs/dto/board-article/board-article.update';
-import { lookupAuthMemberLiked, lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
+import { lookupAuthMemberLiked, shapeIntoMongoObjectId } from '../../libs/config';
 import { LikeInput } from '../../libs/dto/like/like.input';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { LikeService } from '../like/like.service';
@@ -122,8 +122,43 @@ export class BoardArticleService {
 							{ $skip: (input.page - 1) * input.limit },
 							{ $limit: input.limit },
 							lookupAuthMemberLiked(memberId),
-							lookupMember,
-							{ $unwind: '$memberData' },
+							{
+								$lookup: {
+									from: 'members',
+									localField: 'memberId',
+									foreignField: '_id',
+									as: 'memberDataMember',
+								},
+							},
+							{
+								$lookup: {
+									from: 'doctor',
+									localField: 'memberId',
+									foreignField: '_id',
+									as: 'memberDataDoctor',
+								},
+							},
+							{
+								$addFields: {
+									memberData: {
+										$ifNull: [
+											{ $arrayElemAt: ['$memberDataMember', 0] },
+											{ $arrayElemAt: ['$memberDataDoctor', 0] },
+										],
+									},
+								},
+							},
+							{
+								$addFields: {
+									'memberData.isActive': { $ifNull: ['$memberData.isActive', true] },
+								},
+							},
+							{
+								$project: {
+									memberDataMember: 0,
+									memberDataDoctor: 0,
+								},
+							},
 						],
 						metaCounter: [{ $count: 'total' }],
 					},
@@ -175,8 +210,43 @@ export class BoardArticleService {
 						list: [
 							{ $skip: (input.page - 1) * input.limit },
 							{ $limit: input.limit },
-							lookupMember,
-							{ $unwind: '$memberData' },
+							{
+								$lookup: {
+									from: 'members',
+									localField: 'memberId',
+									foreignField: '_id',
+									as: 'memberDataMember',
+								},
+							},
+							{
+								$lookup: {
+									from: 'doctor',
+									localField: 'memberId',
+									foreignField: '_id',
+									as: 'memberDataDoctor',
+								},
+							},
+							{
+								$addFields: {
+									memberData: {
+										$ifNull: [
+											{ $arrayElemAt: ['$memberDataMember', 0] },
+											{ $arrayElemAt: ['$memberDataDoctor', 0] },
+										],
+									},
+								},
+							},
+							{
+								$addFields: {
+									'memberData.isActive': { $ifNull: ['$memberData.isActive', true] },
+								},
+							},
+							{
+								$project: {
+									memberDataMember: 0,
+									memberDataDoctor: 0,
+								},
+							},
 						],
 						metaCounter: [{ $count: 'total' }],
 					},
@@ -216,9 +286,20 @@ export class BoardArticleService {
 	}
 
 	public async removeBoardArticleByAdmin(articleId: ObjectId): Promise<BoardArticle> {
-		const search: T = { _id: articleId, articleStatus: BoardArticleStatus.DELETE };
-		const result = await this.boardArticleModel.findOneAndDelete(search).exec();
+		const existing = await this.boardArticleModel.findById(articleId).exec();
+		if (!existing) throw new InternalServerErrorException(Message.REMOVE_FAILED);
+
+		const result = await this.boardArticleModel.findByIdAndDelete(articleId).exec();
 		if (!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
+
+		// Keep author article counter consistent when hard-deleting from admin panel.
+		if (existing.memberId && existing.articleStatus === BoardArticleStatus.ACTIVE) {
+			await this.memberService.memberStatsEditor({
+				_id: existing.memberId,
+				targetKey: 'memberArticles',
+				modifier: -1,
+			});
+		}
 
 		return result;
 	}

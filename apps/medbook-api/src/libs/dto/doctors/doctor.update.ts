@@ -2,6 +2,7 @@ import { InputType, Field, Int, Float } from '@nestjs/graphql';
 import { IsOptional, IsArray, IsEnum, IsNumber, Min, Length } from 'class-validator';
 import type { ObjectId } from 'mongoose';
 import { Gender } from '../../enums/gender.enum';
+import { MemberStatus } from '../../enums/member.enum';
 import { Specialization } from '../../enums/specialization.enum';
 
 @InputType()
@@ -13,6 +14,11 @@ export class DoctorUpdate {
 	@Length(3, 15)
 	@Field(() => String, { nullable: true })
 	memberNick?: string;
+
+	@IsOptional()
+	@IsEnum(MemberStatus)
+	@Field(() => MemberStatus, { nullable: true })
+	memberStatus?: MemberStatus;
 
 	@IsOptional()
 	@Length(5, 12)
@@ -45,8 +51,10 @@ export class DoctorUpdate {
 	licenseNumber?: string;
 
 	@IsOptional()
-	@Field(() => Specialization, { nullable: true })
-	specialization?: Specialization;
+	@IsArray()
+	@IsEnum(Specialization, { each: true })
+	@Field(() => [Specialization], { nullable: true })
+	specialization?: Specialization[];
 
 	@IsOptional()
 	@Min(0)

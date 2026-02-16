@@ -33,11 +33,7 @@ export class FollowService {
 
 		const result = await this.registerSubscription(followerId, followingId);
 
-		await this.memberService.memberStatsEditor({
-			_id: followerId,
-			targetKey: 'memberFollowings',
-			modifier: 1,
-		});
+		await this.updateFollowerFollowingsStats(followerId, 1);
 		await this.memberService.memberStatsEditor({
 			_id: followingId,
 			targetKey: 'memberFollowers',
@@ -58,11 +54,7 @@ export class FollowService {
 		});
 		if (!result) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
-		await this.memberService.memberStatsEditor({
-			_id: followerId,
-			targetKey: 'memberFollowings',
-			modifier: -1,
-		});
+		await this.updateFollowerFollowingsStats(followerId, -1);
 		await this.memberService.memberStatsEditor({
 			_id: followingId,
 			targetKey: 'memberFollowers',
@@ -78,11 +70,7 @@ export class FollowService {
 
 		const result = await this.registerSubscription(followerId, doctorId);
 
-		await this.memberService.memberStatsEditor({
-			_id: followerId,
-			targetKey: 'memberFollowings',
-			modifier: 1,
-		});
+		await this.updateFollowerFollowingsStats(followerId, 1);
 
 		await this.doctorService.doctorStatsEditor({
 			_id: doctorId,
@@ -107,11 +95,7 @@ export class FollowService {
 
 		if (!result) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
-		await this.memberService.memberStatsEditor({
-			_id: followerId,
-			targetKey: 'memberFollowings',
-			modifier: -1,
-		});
+		await this.updateFollowerFollowingsStats(followerId, -1);
 
 		await this.doctorService.doctorStatsEditor({
 			_id: doctorId,
@@ -122,13 +106,41 @@ export class FollowService {
 		return result as Follower;
 	}
 
+	private async updateFollowerFollowingsStats(followerId: ObjectId, modifier: number): Promise<void> {
+		const memberUpdated = await this.memberModel
+			.findByIdAndUpdate(
+				followerId,
+				{
+					$inc: { memberFollowings: modifier },
+				},
+				{ new: true },
+			)
+			.lean()
+			.exec();
+		if (memberUpdated) return;
+
+		const doctorUpdated = await this.doctorModel
+			.findByIdAndUpdate(
+				followerId,
+				{
+					$inc: { memberFollowings: modifier },
+				},
+				{ new: true },
+			)
+			.lean()
+			.exec();
+		if (doctorUpdated) return;
+
+		throw new InternalServerErrorException(Message.UPDATE_FAILED);
+	}
+
 	private async registerSubscription(followerId: ObjectId, followingId: ObjectId): Promise<Follower> {
 		try {
 			return (await this.followModel.create({
 				followingId: followingId,
 				followerId: followerId,
 			})) as Follower;
-		} catch (err) {
+		} catch (err:any) {
 			console.log('Error, Service.model', err.message);
 			throw new BadRequestException(Message.CREATE_FAILED);
 		}

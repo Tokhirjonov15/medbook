@@ -11,6 +11,7 @@ import {
 } from '../../libs/dto/appoinment/appoinment.input';
 import { AppointmentStatus } from '../../libs/enums/appoinment.enum';
 import { PaymentStatus } from '../../libs/enums/payment.enum';
+import { MemberType } from '../../libs/enums/member.enum';
 import { Doctor } from '../../libs/dto/doctors/doctor';
 import { T } from '../../libs/types/common';
 import { DoctorsService } from '../doctors/doctors.service';
@@ -177,7 +178,12 @@ export class AppoinmentsService {
 		return result;
 	}
 
-	public async getDoctorAppointments(doctorId: string, input: AppointmentsInquiry): Promise<Appointments> {
+	public async getDoctorAppointments(memberId: string, memberType: MemberType, input: AppointmentsInquiry): Promise<Appointments> {
+		const doctorId = memberType === MemberType.DOCTOR ? memberId : input?.search?.doctorId?.toString();
+		if (!doctorId) {
+			throw new BadRequestException(Message.BAD_REQUEST);
+		}
+
 		const doctorObjectId = new Types.ObjectId(doctorId);
 		const { search } = input;
 		const match: T = {

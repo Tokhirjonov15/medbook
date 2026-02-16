@@ -53,15 +53,16 @@ export class AppoinmentsResolver {
 		return await this.appoinmentService.updateAppointment(shapeIntoMongoObjectId(memberId), input);
 	}
 
-	@Roles(MemberType.DOCTOR)
+	@Roles(MemberType.DOCTOR, MemberType.PATIENT)
 	@UseGuards(RolesGuard)
 	@Query(() => Appointments)
 	public async getDoctorAppointments(
 		@Args('input') input: AppointmentsInquiry,
 		@AuthMember('_id') memberId: string,
+		@AuthMember('memberType') memberType: MemberType,
 	): Promise<Appointments> {
 		console.log('Query: getDoctorAppointments');
-		return await this.appoinmentService.getDoctorAppointments(memberId, input);
+		return await this.appoinmentService.getDoctorAppointments(memberId, memberType, input);
 	}
 
 	@Roles(MemberType.PATIENT)

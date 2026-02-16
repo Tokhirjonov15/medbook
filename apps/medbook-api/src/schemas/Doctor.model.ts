@@ -103,9 +103,10 @@ const DoctorProfileSchema = new Schema(
 		},
 
 		specialization: {
-			type: String,
+			type: [String],
 			enum: Specialization,
 			required: true,
+			default: [],
 		},
 
 		experience: {

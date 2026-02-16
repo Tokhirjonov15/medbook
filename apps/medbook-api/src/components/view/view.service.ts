@@ -77,7 +77,16 @@ export class ViewService {
 			list: [], 
 			metaCounter: data[0]?.metaCounter || [] 
 		};
-		result.list = data[0]?.list?.map((ele) => ele.visitedDoctor) || [];
+		result.list =
+			data[0]?.list?.map((ele) => {
+				const doctor = ele.visitedDoctor;
+				const raw = doctor?.specialization;
+				if (!Array.isArray(raw)) {
+					if (typeof raw === 'string' && raw.trim()) doctor.specialization = [raw];
+					else doctor.specialization = [];
+				}
+				return doctor;
+			}) || [];
 		
 		return result;
 	}

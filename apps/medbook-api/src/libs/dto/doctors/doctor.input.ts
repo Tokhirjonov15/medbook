@@ -31,8 +31,8 @@ export class DoctorSignupInput {
 
 	@IsNotEmpty()
 	@IsEnum(Specialization, { each: true })
-	@Field(() => String)
-	specialization: string;
+	@Field(() => [Specialization])
+	specialization: Specialization[];
 
 	@IsNotEmpty()
 	@IsNumber()

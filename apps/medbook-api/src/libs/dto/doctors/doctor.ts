@@ -2,6 +2,7 @@ import { Field, ObjectType, Int, Float } from '@nestjs/graphql';
 import type { ObjectId } from 'mongoose';
 import { Gender } from '../../enums/gender.enum';
 import { MemberStatus, MemberType } from '../../enums/member.enum';
+import { Specialization } from '../../enums/specialization.enum';
 import { MeLiked } from '../like/like';
 import { MeFollowed } from '../follow/follow';
 
@@ -51,8 +52,8 @@ export class Doctor {
 	@Field(() => String)
 	licenseNumber: string;
 
-	@Field(() => String)
-	specialization: string;
+	@Field(() => [Specialization])
+	specialization: Specialization[];
 
 	@Field(() => Int)
 	experience: number;
