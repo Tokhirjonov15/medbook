@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { MemberModule } from './member/member.module';
 import { AppoinmentsModule } from './appoinments/appoinments.module';
 import { PrescriptionsModule } from './prescriptions/prescriptions.module';
@@ -15,6 +15,7 @@ import { CommentModule } from './comment/comment.module';
 import { LikeModule } from './like/like.module';
 import { FollowModule } from './follow/follow.module';
 import { NoticeModule } from './notice/notice.module';
+import { AiChatModule } from './ai-chat/ai-chat.module';
 
 @Module({
 	imports: [
@@ -34,6 +35,8 @@ import { NoticeModule } from './notice/notice.module';
 		LikeModule,
 		FollowModule,
 		NoticeModule,
+		AiChatModule,
 	],
 })
 export class ComponentsModule {}
+
