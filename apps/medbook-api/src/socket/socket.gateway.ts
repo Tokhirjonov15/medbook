@@ -39,12 +39,6 @@ export class SocketGateway implements OnGatewayInit {
 
 	public async handleConnection(client: WebSocket, req: any) {
 		const authMember = await this.retrieveAuth(req);
-		if (!authMember) {
-			client.send(JSON.stringify({ event: 'error', message: Message.NOT_AUTHENTICATED }));
-			client.close();
-			return;
-		}
-
 		this.summaryClient++;
 		this.clientsAuthMap.set(client, authMember);
 
@@ -54,7 +48,7 @@ export class SocketGateway implements OnGatewayInit {
 		const infoMsg: InfoPayload = {
 			event: 'info',
 			totalClient: this.summaryClient,
-			memberData: { ...authMember, _id: authMember._id.toString() },
+			memberData: authMember ? { ...authMember, _id: authMember._id.toString() } : null,
 			action: 'joined',
 		};
 		this.emitMessage(infoMsg);
@@ -86,7 +80,6 @@ export class SocketGateway implements OnGatewayInit {
 		const authMember = this.clientsAuthMap.get(client);
 		if (!authMember) {
 			client.send(JSON.stringify({ event: 'error', message: Message.NOT_AUTHENTICATED }));
-			client.close();
 			return;
 		}
 
