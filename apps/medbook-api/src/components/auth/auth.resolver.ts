@@ -1,7 +1,6 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { BadRequestException, UseGuards } from '@nestjs/common';
-import { AuthGuard } from './guards/auth.guard';
 import { Message } from '../../libs/enums/common.enum';
 import { MessageResponse } from '../../libs/dto/auth/auth.response';
 import { ForgotPasswordInput } from '../../libs/dto/auth/forgotPassword';

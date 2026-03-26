@@ -7,10 +7,10 @@ export class ForgotPasswordInput {
 	@IsString()
 	@Length(3, 15)
 	@Field(() => String)
-	memberNick: string;
+	memberNick!: string;
 
 	@IsNotEmpty()
 	@IsString()
 	@Field(() => String)
-	memberPhone: string;
+	memberPhone!: string;
 }
