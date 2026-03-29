@@ -9,7 +9,7 @@ import { Message } from '../libs/enums/common.enum';
 import { PublicChatService } from './public-chat.service';
 import { InfoPayload, MessagePayload } from './socket.types';
 
-@WebSocketGateway({ transports: ['websocket'], secure: false })
+@WebSocketGateway({ transports: ['websocket'], secure: false, path: '/public-chat' })
 export class SocketGateway implements OnGatewayInit {
 	private logger: Logger = new Logger('SocketEventsGateway');
 	private summaryClient: number = 0;
